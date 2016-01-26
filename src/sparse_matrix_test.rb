@@ -20,8 +20,10 @@ class SparseMatrixTest < Test::Unit::TestCase
         assert(SparseMatrix.new(array1).subtract(array2).equals(result));
     end
 
-    def test_rank
+    def test_get_rank
+        array1 = Matrix[[7, 9, 11], [6, 8, 10], [5, 7, 9]]
 
+        assert_equal(SparseMatrix.new(array1).get_rank(), array1.rank())
     end
 
 end
