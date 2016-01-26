@@ -16,4 +16,22 @@ class SparseMatrixTest < Test::Unit::TestCase
 
     end
 
+    def test_transpose
+      # assign 2d array to make into sparse matrices
+      m1 = [[1,0,2],[0,3,0]] # transpose of m1
+      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
+
+      # get corresponding sparse matrix objects
+      sparse_m1 = SparseMatrix.new(m1)
+      sparse_m2 = SparseMatrix.new(m2)
+
+      # calculate transposes
+      sparse_m1_transposed = sparse_m1.transpose()
+      sparse_m2_transposed = sparse_m2.transpose()
+
+      # check for correct transposition (?)
+      assert(sparse_m1_transposed == sparse_m2)
+      assert(sparse_m2_transposed == sparse_m1)
+    end
+
 end
