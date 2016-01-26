@@ -1,69 +1,73 @@
 
 class SparseMatrix
 
-	def add(array)
+    def initialize(array)
+    # Take the array and shove it into whatever
+    end
 
-	end
+    def add(array)
 
-	def subtract(array)
+    end
 
-	end
+    def subtract(array)
 
-	def matrix_multiply(array)
+    end
 
-	end
+    def matrix_multiply(array)
 
-	# This function may not need to exist. It could just be part of the other multiply function
-	def scalar_multiply(value)
+    end
 
-	end
+    # This function may not need to exist. It could just be part of the other multiply function
+    def scalar_multiply(value)
 
-	def elementwise_multiply(array)
+    end
 
-	end
+    def elementwise_multiply(array)
 
-	def invert()
+    end
 
-	end
+    def invert()
 
-	def transpose()
+    end
 
-	end
+    def transpose()
 
-	def get_rank()
+    end
 
-	end
+    def get_rank()
 
-	def is_invertable()
+    end
 
-	end
+    def is_invertable()
 
-	def get_trace()
+    end
 
-	end
+    def get_trace()
 
-	def determinant()
+    end
 
-	end
+    def determinant()
 
-	def is_empty()
+    end
 
-	end
+    def is_empty()
 
-	# Array*Array^T=Identity=Array^T*Array
-	def is_orthagonal()
+    end
 
-	end
+    # Array*Array^T=Identity=Array^T*Array
+    def is_orthagonal()
 
-	def is_square()
+    end
 
-	end
+    def is_square()
 
-	def is_singular()
+    end
 
-	end
+    def is_singular()
 
-	def equals(array)
+    end
 
-	end
+    def equals(array)
+
+    end
 end
