@@ -13,6 +13,14 @@ class SparseMatrixTest < Test::Unit::TestCase
     end
 
     def test_subtract
+        array1 = Matrix[[7, 9, 11], [6, 8, 10], [5, 7, 9]]
+        array2 = Matrix[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        result = array1 - array2
+
+        assert(SparseMatrix.new(array1).subtract(array2).equals(result));
+    end
+
+    def test_rank
 
     end
 
