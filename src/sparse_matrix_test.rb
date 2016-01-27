@@ -103,4 +103,31 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m2_is_diagonal == false)
     end
 
+    def test_symmetric
+      # https://en.wikipedia.org/wiki/Symmetric_matrix
+      # assign 2d array to make into sparse matrices
+      m1 = [[1,0,2],[0,3,0]] # not symmetric
+      m2 = [[1,0],[0,3],[2,0]] # not symmetric
+      m3 = [[1,5,7],[5,4,8],[7,8,0]]
+      #
+      #       1,5,7
+      # m3 =  5,4,8   #---> symmetric
+      #       7,8,0
+      #
+      # get corresponding sparse matrix objects
+      sparse_m1 = SparseMatrix.new(m1)
+      sparse_m2 = SparseMatrix.new(m2)
+      sparse_m3 = SparseMatrix.new(m3)
+
+      # calculate transposes
+      sparse_m1_transposed = sparse_m1.transpose()
+      sparse_m2_transposed = sparse_m2.transpose()
+      sparse_m3_transposed = sparse_m3.transpose()
+
+      # check
+      assert_not_equal(sparse_m1_transposed == sparse_m1) # not symmetric
+      assert_not_equal(sparse_m2_transposed == sparse_m2) # not symmetric
+      assert(sparse_m3_transposed == sparse_m3)  # symmetric!
+    end
+
 end
