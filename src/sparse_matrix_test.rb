@@ -85,4 +85,22 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m1_trace == -1) # bad number or exception?
     end
 
+    def test_diagonal
+      # http://calculator.tutorvista.com/math/430/diagonal-matrix-calculator.html
+      # Note: requires square matrix
+      # assign 2d array to make into sparse matrices
+      m1 = [[1,0,0],[0,3,0],[0,32,0]] # transpose of m1
+      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
+
+      # get corresponding sparse matrix objects
+      sparse_m1 = SparseMatrix.new(m1)
+      sparse_m2 = SparseMatrix.new(m2)
+
+      # calculate traces
+      sparse_m1_is_diagonal = sparse_m1.is_diagonal?
+      sparse_m2_is_diagonal = sparse_m2.is_diagonal?
+      assert(sparse_m1_is_diagonal == true)
+      assert(sparse_m2_is_diagonal == false)
+    end
+
 end
