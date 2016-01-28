@@ -9,7 +9,7 @@ class SparseMatrixTest < Test::Unit::TestCase
         array2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         result = Matrix.rows(array1) + Matrix.rows(array2)
 
-        assert(SparseMatrix.new(array1).add(array2).equals(result.to_a));
+        assert_equal(SparseMatrix.new(array1).add(array2), result.to_a)
     end
 
     def test_subtract
@@ -17,13 +17,32 @@ class SparseMatrixTest < Test::Unit::TestCase
         array2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         result = Matrix.rows(array1) - Matrix.rows(array2)
 
-        assert(SparseMatrix.new(array1).subtract(array2).equals(result.to_a));
+        assert_equal(SparseMatrix.new(array1).subtract(array2), result.to_a)
     end
 
     def test_get_rank
         array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
 
-        assert_equal(SparseMatrix.new(array1).get_rank(), Matrix[[7, 9, 11], [6, 8, 10], [5, 7, 9]].rank())
+        assert_equal(SparseMatrix.new(array1).get_rank(), Matrix.rows(array1).rank())
+    end
+
+    def test_is_empty
+        array1 = [[]]
+
+        # passing an empty array should result in the sparse matrix being empty
+        assert(SparseMatrix.new(array1).is_empty())
+    end
+
+    def test_determinant()
+        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+
+        assert_equal(SparseMatrix.new(array1).determinant(), Matrix.rows(array1).determinant())
+    end
+
+    def test_is_singular()
+        array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
+
+        assert_equal(SparseMatrix.new(array1).is_singular(), Matrix.rows(array1).singular?())
     end
 
     def test_transpose
