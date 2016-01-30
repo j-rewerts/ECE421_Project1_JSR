@@ -121,23 +121,38 @@ class SparseMatrixTest < Test::Unit::TestCase
 
 
     def test_trace
-      # http://matrix.reshish.com/transCalculation.php
       # assign 2d array to make into sparse matrices
-      m1 = [[1,0,2],[0,3,0],[1,0,1]] # transpose of m1
-      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
+      m1 = [[1,0,2],[0,3,0],[1,0,1]] # square matrix
+      m2 = [[1,0],[0,3],[2,0]] # not square matrix --> error or bad number...
 
       # get corresponding sparse matrix objects
       sparse_m1 = SparseMatrix.new(m1)
       sparse_m2 = SparseMatrix.new(m2)
 
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+
       # calculate traces
       sparse_m1_trace = sparse_m1.trace()
       sparse_m2_trace = sparse_m2.trace()
 
-      # check for correct trace
-      assert(sparse_m2_trace == 1 + 3 + 1) # sum of diagonals
-      assert_not_equal(sparse_m1_trace, sparse_m1)
-      assert(sparse_m1_trace == -1) # bad number or exception?
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+
+      assert(sparse_m1_trace == 1 + 3 + 1) # sum of diagonals
+      assert(sparse_m2_trace == -1) # bad number or exception?
     end
 
     def test_diagonal
