@@ -51,31 +51,52 @@ class SparseMatrixTest < Test::Unit::TestCase
       m1 = [[1,0,2],[0,3,0]] # transpose of m1
       m2 = [[1,0],[0,3],[2,0]] # transpose of m2
       m3 = [[0,0],[0,0]]
+      m4 = [[]]
 
       # get corresponding sparse matrix objects
       sparse_m1 = SparseMatrix.new(m1)
       sparse_m2 = SparseMatrix.new(m2)
       sparse_m3 = SparseMatrix.new(m3)
+      sparse_m4 = SparseMatrix.new(m4)
 
       # pre-conditions & invariants
       assert(sparse_m1.is_a SparseMatrix)
       assert(sparse_m2.is_a SparseMatrix)
       assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m4.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+      assert(sparse_m4 == SparseMatrix.new(m4))
 
 
       # calculate transposes
       sparse_m1_transposed = sparse_m1.transpose()
       sparse_m2_transposed = sparse_m2.transpose()
       sparse_m3_transposed = sparse_m3.transpose()
-
-      # post-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+      sparse_m4_transposed = sparse_m4.transpose()
 
       assert(sparse_m1_transposed == sparse_m2)
       assert(sparse_m2_transposed == sparse_m1)
       assert(sparse_m3_transposed == sparse_m3)
+      assert(sparse_m4_transposed == SparseMatrix.new([[]]))
+
+      # post-conditions & invariants
+      assert(sparse_m1_transposed.is_a SparseMatrix)
+      assert(sparse_m2_transposed.is_a SparseMatrix)
+      assert(sparse_m3_transposed.is_a SparseMatrix)
+      assert(sparse_m4_transposed.is_a SparseMatrix)
+
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m4.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+      assert(sparse_m4 == SparseMatrix.new(m4))
 
     end
 
@@ -105,6 +126,10 @@ class SparseMatrixTest < Test::Unit::TestCase
       m2_size = sparse_m2.size()
       m3_size = sparse_m3.size()
 
+      assert(m1_size == [2,3])
+      assert(m2_size == [3,2])
+      assert(m3_size == [0,0])
+
       # post-conditions & invariants
       assert(sparse_m1.is_a SparseMatrix)
       assert(sparse_m2.is_a SparseMatrix)
@@ -113,17 +138,13 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
       assert(sparse_m3 == SparseMatrix.new(m3))
-
-      assert(m1_size == [2,3])
-      assert(m2_size == [3,2])
-      assert(m3_size == [0,0])
     end
 
 
     def test_trace
       # assign 2d array to make into sparse matrices
       m1 = [[1,0,2],[0,3,0],[1,0,1]] # square matrix
-      m2 = [[1,0],[0,3],[2,0]] # not square matrix --> error or bad number...
+      m2 = [[8,0,1],[0,3,1],[2,0,4]] # not square matrix --> error or bad number...
 
       # get corresponding sparse matrix objects
       sparse_m1 = SparseMatrix.new(m1)
@@ -132,45 +153,79 @@ class SparseMatrixTest < Test::Unit::TestCase
       # pre-conditions & invariants
       assert(sparse_m1.is_a SparseMatrix)
       assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1.is_square?)
+      assert(sparse_m2.is_square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
 
       # calculate traces
-      sparse_m1_trace = sparse_m1.trace()
-      sparse_m2_trace = sparse_m2.trace()
+      sparse_m1_trace = sparse_m1.get_trace()
+      sparse_m2_trace = sparse_m2.get_trace()
 
-      # pre-conditions & invariants
+      assert(sparse_m1_trace == 1 + 3 + 1) # sum of diagonals
+      assert(sparse_m2_trace == 8 + 3 + 4) # bad number or exception?
+
+      # post-conditions & invariants
       assert(sparse_m1.is_a SparseMatrix)
       assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1.is_square?)
+      assert(sparse_m2.is_square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-
-      assert(sparse_m1_trace == 1 + 3 + 1) # sum of diagonals
-      assert(sparse_m2_trace == -1) # bad number or exception?
     end
 
     def test_diagonal
       # http://calculator.tutorvista.com/math/430/diagonal-matrix-calculator.html
       # Note: requires square matrix
       # assign 2d array to make into sparse matrices
-      m1 = [[1,0,0],[0,3,0],[0,32,0]] # transpose of m1
-      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
+      m1 = [[1,0,0],[0,3,0],[0,32,0]] # not diagonal
+      m2 = [[1,0,0],[0,3,0],[0,0,0]] # diagonal
+      m3 = [[]]
 
       # get corresponding sparse matrix objects
       sparse_m1 = SparseMatrix.new(m1)
       sparse_m2 = SparseMatrix.new(m2)
+      sparse_m3 = SparseMatrix.new(m3)
 
-      # calculate traces
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1.is_square?)
+      assert(sparse_m2.is_square?)
+      assert(sparse_m3.is_square?)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+
+      # calculate diagonality
       sparse_m1_is_diagonal = sparse_m1.is_diagonal?
       sparse_m2_is_diagonal = sparse_m2.is_diagonal?
-      assert(sparse_m1_is_diagonal == true)
-      assert(sparse_m2_is_diagonal == false)
+      sparse_m3_is_diagonal = sparse_m3.is_diagonal?
+
+      assert(sparse_m1_is_diagonal == false)
+      assert(sparse_m2_is_diagonal == true)
+      assert(sparse_m3_is_diagonal == false)
+
+      # post-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1.is_square?)
+      assert(sparse_m2.is_square?)
+      assert(sparse_m3.is_square?)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+
     end
 
     def test_symmetric
@@ -178,7 +233,7 @@ class SparseMatrixTest < Test::Unit::TestCase
       # assign 2d array to make into sparse matrices
       m1 = [[1,0,2],[0,3,0]] # not symmetric
       m2 = [[1,0],[0,3],[2,0]] # not symmetric
-      m3 = [[1,5,7],[5,4,8],[7,8,0]]
+      m3 = [[1,5,7],[5,4,8],[7,8,0]] # symmetric
       #
       #       1,5,7
       # m3 =  5,4,8   #---> symmetric
@@ -189,15 +244,28 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m2 = SparseMatrix.new(m2)
       sparse_m3 = SparseMatrix.new(m3)
 
-      # calculate transposes
-      sparse_m1_transposed = sparse_m1.transpose()
-      sparse_m2_transposed = sparse_m2.transpose()
-      sparse_m3_transposed = sparse_m3.transpose()
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
 
       # check
-      assert_not_equal(sparse_m1_transposed == sparse_m1) # not symmetric
-      assert_not_equal(sparse_m2_transposed == sparse_m2) # not symmetric
-      assert(sparse_m3_transposed == sparse_m3)  # symmetric!
+      assert(sparse_m1.is_symmetric? == false)
+      assert(sparse_m2.is_symmetric? == false)
+      assert(sparse_m3.is_symmetric? == true)
+
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a SparseMatrix)
+      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m3.is_a SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
     end
 
 end

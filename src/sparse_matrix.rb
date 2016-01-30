@@ -42,6 +42,14 @@ class SparseMatrix
 
     end
 
+    def is_diagonal?()
+      return false
+    end
+
+    def is_symmetric?()
+      return false
+    end
+
     def get_trace()
 
     end
@@ -59,15 +67,23 @@ class SparseMatrix
 
     end
 
-    def is_square()
-
+    def is_square?()
+      return true
     end
 
     def is_singular()
 
     end
 
+    def is_a(obj)
+      return true
+    end
+
     def equals(array)
+
+    end
+
+    def size()
 
     end
 end
