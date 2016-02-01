@@ -19,30 +19,38 @@ class SparseMatrixTest < Test::Unit::TestCase
 
         assert_equal(SparseMatrix.new(array1).subtract(array2), result.to_a)
     end
-
-    def test_get_rank
-        array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
-
-        assert_equal(SparseMatrix.new(array1).get_rank(), Matrix.rows(array1).rank())
+    
+    def test_matrix_multiply
+        array1 = [[4, 0, 3], [3, 4, 0], [4, 6, 8]]
+        array2 = [[1, 3, 0], [8, 7, 3], [9, 9, 4]]
+        result = Matrix.rows(array1) * Matrix.rows(array2)
+        
+        assert_equal(SparseMatrix.new(array1).matrix_multiply(array2), result.to_a)
     end
-
-    def test_is_empty
-        array1 = [[]]
-
-        # passing an empty array should result in the sparse matrix being empty
-        assert(SparseMatrix.new(array1).is_empty())
+    
+    def test_scalar_multiply
+        array1 = [[4, 0, 3], [3, 4, 0], [4, 6, 8]]
+        scale = 2
+        result = Matrix.rows(array1) * scale
+        
+        assert_equal(SparseMatrix.new(array1).scalar_multiply(scale), result.to_a)
     end
-
-    def test_determinant()
-        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
-
-        assert_equal(SparseMatrix.new(array1).determinant(), Matrix.rows(array1).determinant())
+    
+    def test_elementwise_multiply
+        array1 = [[4, 0, 3], [3, 4, 0], [4, 6, 8]]
+        array2 = [[1, 3, 0], [8, 7, 3], [9, 9, 4]]
+        
+        # For each row of +array1+, multiply each element by the corresponding element in +array2+.
+        result = array1.collect.with_index {|x, i| x.collect.with_index {|y, j| y * array2[i][j]} }
+        
+        assert_equal(SparseMatrix.new(array1).elementwise_multiply(array2), result.to_a)
     end
-
-    def test_is_singular()
-        array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
-
-        assert_equal(SparseMatrix.new(array1).is_singular(), Matrix.rows(array1).singular?())
+    
+    def test_inverse
+        array1 = [[4, 0, 3], [3, 4, 0], [4, 6, 8]]
+        result = Matrix.rows(array1).inverse()
+        
+        assert_equal(SparseMatrix.new(array1).inverse(), result.to_a)
     end
 
     def test_transpose
@@ -98,48 +106,13 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m3 == SparseMatrix.new(m3))
       assert(sparse_m4 == SparseMatrix.new(m4))
 
+    end    
+    
+    def test_rank
+        array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
+
+        assert_equal(SparseMatrix.new(array1).rank(), Matrix.rows(array1).rank())
     end
-
-    def test_size
-      # https://en.wikipedia.org/wiki/Matrix_%28mathematics%29#Size
-      # assign 2d array to make into sparse matrices
-      m1 = [[1,0,2],[0,3,0]] # transpose of m1
-      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
-      m3 = [[]] # empty
-
-      # get corresponding sparse matrix objects
-      sparse_m1 = SparseMatrix.new(m1)
-      sparse_m2 = SparseMatrix.new(m2)
-      sparse_m3 = SparseMatrix.new(m3)
-
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-
-      # get sizes
-      m1_size = sparse_m1.size()
-      m2_size = sparse_m2.size()
-      m3_size = sparse_m3.size()
-
-      assert(m1_size == [2,3])
-      assert(m2_size == [3,2])
-      assert(m3_size == [0,0])
-
-      # post-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-    end
-
 
     def test_trace
       # assign 2d array to make into sparse matrices
@@ -151,34 +124,89 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m2 = SparseMatrix.new(m2)
 
       # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
 
-      assert(sparse_m1.is_square?)
-      assert(sparse_m2.is_square?)
+      assert(sparse_m1.square?)
+      assert(sparse_m2.square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
 
       # calculate traces
-      sparse_m1_trace = sparse_m1.get_trace()
-      sparse_m2_trace = sparse_m2.get_trace()
+      sparse_m1_trace = sparse_m1.trace()
+      sparse_m2_trace = sparse_m2.trace()
 
-      assert(sparse_m1_trace == 1 + 3 + 1) # sum of diagonals
-      assert(sparse_m2_trace == 8 + 3 + 4) # bad number or exception?
+      assert(sparse_m1_trace.eql? (1 + 3 + 1)) # sum of diagonals
+      assert(sparse_m2_trace.eql? (8 + 3 + 4)) # bad number or exception?
 
       # post-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
 
-      assert(sparse_m1.is_square?)
-      assert(sparse_m2.is_square?)
+      assert(sparse_m1.square?)
+      assert(sparse_m2.square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
     end
+    
+    def test_determinant
+        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
 
-    def test_diagonal
+        assert_equal(SparseMatrix.new(array1).determinant(), Matrix.rows(array1).determinant())
+    end
+    
+    def test_empty?
+        array1 = [[]]
+
+        # passing an empty array should result in the sparse matrix being empty
+        assert(SparseMatrix.new(array1).empty?)
+    end
+    
+    def test_orthogonal?   
+        # Orthogonality implies: A*A' == I.
+    
+        array1 = [[-0.3092, -0.9510], [-0.9510, 0.3092]] # orthogonal
+        array2 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]] # not orthogonal
+        array3 = [[3, 4, 9], [2, 1, 6]] # not orthogonal
+        array4 = [[-3, -4], [-4, 3]] # not orthogonal
+        
+        assert(SparseMatrix.new(array1).orthogonal?)
+        assert(!SparseMatrix.new(array2).orthogonal?)
+        assert(!SparseMatrix.new(array3).orthogonal?)
+        assert(!SparseMatrix.new(array4).orthogonal?)
+    end
+    
+    def test_square?
+        # Square implies: num_rows == num_columns.
+    
+        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+        array2 = [[3, 4, 9], [2, 1, 6]]
+        
+        assert(SparseMatrix.new(array1).square?)
+        assert(!SparseMatrix.new(array2).square?)
+    end
+    
+    def test_singular?
+        # Singular implies: the determinant of the matrix is 0.
+    
+        array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
+
+        assert_equal(SparseMatrix.new(array1).singular?, Matrix.rows(array1).singular?())
+    end
+
+    def test_invertible?
+        # Invertibility implies: the matrix is square and its determinant is not 0. 
+    
+        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+        array2 = [[3, 4, 9], [2, 1, 6]]
+        
+        assert(SparseMatrix.new(array1).invertible?)
+        assert(!SparseMatrix.new(array2).invertible?)
+    end    
+    
+    def test_diagonal?
       # http://calculator.tutorvista.com/math/430/diagonal-matrix-calculator.html
       # Note: requires square matrix
       # assign 2d array to make into sparse matrices
@@ -192,43 +220,42 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m3 = SparseMatrix.new(m3)
 
       # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
 
-      assert(sparse_m1.is_square?)
-      assert(sparse_m2.is_square?)
-      assert(sparse_m3.is_square?)
+      assert(sparse_m1.square?)
+      assert(sparse_m2.square?)
+      assert(sparse_m3.square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
       assert(sparse_m3 == SparseMatrix.new(m3))
 
       # calculate diagonality
-      sparse_m1_is_diagonal = sparse_m1.is_diagonal?
-      sparse_m2_is_diagonal = sparse_m2.is_diagonal?
-      sparse_m3_is_diagonal = sparse_m3.is_diagonal?
+      sparse_m1_is_diagonal = sparse_m1.diagonal?
+      sparse_m2_is_diagonal = sparse_m2.diagonal?
+      sparse_m3_is_diagonal = sparse_m3.diagonal?
 
       assert(sparse_m1_is_diagonal == false)
       assert(sparse_m2_is_diagonal == true)
       assert(sparse_m3_is_diagonal == false)
 
       # post-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
 
-      assert(sparse_m1.is_square?)
-      assert(sparse_m2.is_square?)
-      assert(sparse_m3.is_square?)
+      assert(sparse_m1.square?)
+      assert(sparse_m2.square?)
+      assert(sparse_m3.square?)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
       assert(sparse_m3 == SparseMatrix.new(m3))
-
     end
-
-    def test_symmetric
+    
+    def test_symmetric?
       # https://en.wikipedia.org/wiki/Symmetric_matrix
       # assign 2d array to make into sparse matrices
       m1 = [[1,0,2],[0,3,0]] # not symmetric
@@ -245,27 +272,67 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m3 = SparseMatrix.new(m3)
 
       # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
       assert(sparse_m3 == SparseMatrix.new(m3))
 
       # check
-      assert(sparse_m1.is_symmetric? == false)
-      assert(sparse_m2.is_symmetric? == false)
-      assert(sparse_m3.is_symmetric? == true)
+      assert(sparse_m1.symmetric? == false)
+      assert(sparse_m2.symmetric? == false)
+      assert(sparse_m3.symmetric? == true)
 
       # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3)) 
+    end
+    
+    def test_size
+      # https://en.wikipedia.org/wiki/Matrix_%28mathematics%29#Size
+      # assign 2d array to make into sparse matrices
+      m1 = [[1,0,2],[0,3,0]] # transpose of m1
+      m2 = [[1,0],[0,3],[2,0]] # transpose of m2
+      m3 = [[]] # empty
+
+      # get corresponding sparse matrix objects
+      sparse_m1 = SparseMatrix.new(m1)
+      sparse_m2 = SparseMatrix.new(m2)
+      sparse_m3 = SparseMatrix.new(m3)
+
+      # pre-conditions & invariants
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
+
+      assert(sparse_m1 == SparseMatrix.new(m1))
+      assert(sparse_m2 == SparseMatrix.new(m2))
+      assert(sparse_m3 == SparseMatrix.new(m3))
+
+      # get sizes
+      m1_size = sparse_m1.size()
+      m2_size = sparse_m2.size()
+      m3_size = sparse_m3.size()
+
+      assert(m1_size == [2,3])
+      assert(m2_size == [3,2])
+      assert(m3_size == [0,0])
+
+      # post-conditions & invariants
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
       assert(sparse_m3 == SparseMatrix.new(m3))
     end
-
+    
 end

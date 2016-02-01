@@ -26,7 +26,7 @@ class SparseMatrix
 
     end
 
-    def invert()
+    def inverse()
 
     end
 
@@ -34,23 +34,11 @@ class SparseMatrix
 
     end
 
-    def get_rank()
+    def rank()
 
     end
 
-    def is_invertable()
-
-    end
-
-    def is_diagonal?()
-      return false
-    end
-
-    def is_symmetric?()
-      return false
-    end
-
-    def get_trace()
+    def trace()
 
     end
 
@@ -58,28 +46,48 @@ class SparseMatrix
 
     end
 
-    def is_empty()
+    def row_count()
+        
+    end
+    
+    def column_count()
+        
+    end
+    
+    def empty?()
 
     end
 
     # Array*Array^T=Identity=Array^T*Array
-    def is_orthagonal()
+    def orthogonal?()
 
     end
 
-    def is_square?()
+    def square?()
       return true
     end
 
-    def is_singular()
+    def singular?()
 
     end
 
-    def is_a(obj)
-      return true
+    def invertible?()
+
     end
 
+    def diagonal?()
+
+    end
+
+    def symmetric?()
+
+    end    
+    
     def equals(array)
+
+    end
+    
+    def eql(array)
 
     end
 
