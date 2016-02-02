@@ -228,9 +228,30 @@ class SparseMatrixTest < Test::Unit::TestCase
 
     end
 
+    def test_identity
+      i_2 = [[1,0], [0,1]]
+      i_3 = [[1,0,0], [0,1,0], [0,0,1]]
+      i_4 = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]
+
+      # generate the identity matrices
+      sparse_i_2 = SparseMatrix.identity(2)
+      sparse_i_3 = SparseMatrix.identity(3)
+      sparse_i_4 = SparseMatrix.identity(4)
+
+      # convert test identity matrices to sparse matrices
+      sparse_m1 = SparseMatrix.new(i_2)
+      sparse_m2 = SparseMatrix.new(i_3)
+      sparse_m3 = SparseMatrix.new(i_4)
+
+      # check for equality
+      assert(sparse_m1 == sparse_i_2)
+      assert(sparse_m2 == sparse_i_3)
+      assert(sparse_m3 == sparse_i_4)
+    end
+
     def test_equal
       array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
       assert(SparseMatrix.new(array1).equals(Matrix.rows(array1)))
     end
-    
+
 end

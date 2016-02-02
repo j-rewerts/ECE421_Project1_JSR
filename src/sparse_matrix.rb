@@ -17,19 +17,34 @@ class SparseMatrix
 
     def subtract(array)
 
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+
     end
 
     def matrix_multiply(array)
+
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
 
     end
 
     # This function may not need to exist. It could just be part of the other multiply function
     def scalar_multiply(value)
 
+        # Check pre-conditions: value must be an Integer
+        if !(value.is_a? Integer)
+            raise TypeError, "The input object is not an Integer. It is a #{value.class}."
+
     end
 
     def elementwise_multiply(array)
 
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
     end
 
     def inverse()
@@ -94,6 +109,10 @@ class SparseMatrix
     def diagonal?()
     
         # Pre-conditions: None. The current object is already a SparseMatrix.
+
+    end
+
+    def SparseMatrix.identity(size)
 
     end
 
