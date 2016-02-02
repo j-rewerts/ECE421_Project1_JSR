@@ -67,9 +67,9 @@ class SparseMatrix
     end
 
     def rank()
-        # No pre-conditions
-
-        # No post-conditions
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
     end
 
@@ -78,19 +78,21 @@ class SparseMatrix
     end
 
     def determinant()
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
 
     def row_count()
-        # No pre-conditions
-
-        # No post-conditions
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
     
     def column_count()
-        # No pre-conditions
-
-        # No post-conditions
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
     
     def empty?()
