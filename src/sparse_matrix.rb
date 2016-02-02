@@ -7,10 +7,11 @@ class SparseMatrix
 
     def add(m)
     
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
         
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
+    
         # Implement adding functionality.
    
     end
