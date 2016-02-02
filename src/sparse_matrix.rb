@@ -67,6 +67,9 @@ class SparseMatrix
     end
 
     def rank()
+        # No pre-conditions
+
+        # No post-conditions
 
     end
 
@@ -79,11 +82,15 @@ class SparseMatrix
     end
 
     def row_count()
-        
+        # No pre-conditions
+
+        # No post-conditions
     end
     
     def column_count()
-        
+        # No pre-conditions
+
+        # No post-conditions
     end
     
     def empty?()
