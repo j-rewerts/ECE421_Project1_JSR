@@ -5,8 +5,14 @@ class SparseMatrix
     # Take the array and shove it into whatever
     end
 
-    def add(array)
+    def add(m)
 
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        
+        # Implement adding functionality.
+   
     end
 
     def subtract(array)
