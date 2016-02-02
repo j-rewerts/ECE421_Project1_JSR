@@ -79,6 +79,10 @@ class SparseMatrix
 
     end
 
+    def SparseMatrix.identity(size)
+
+    end
+
     def symmetric?()
 
     end    
