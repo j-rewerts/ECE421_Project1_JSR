@@ -68,10 +68,10 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m4 = SparseMatrix.new(m4)
 
       # pre-conditions & invariants
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
-      assert(sparse_m4.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
+      assert(sparse_m4.is_a? SparseMatrix)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
@@ -91,15 +91,15 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m4_transposed == SparseMatrix.new([[]]))
 
       # post-conditions & invariants
-      assert(sparse_m1_transposed.is_a SparseMatrix)
-      assert(sparse_m2_transposed.is_a SparseMatrix)
-      assert(sparse_m3_transposed.is_a SparseMatrix)
-      assert(sparse_m4_transposed.is_a SparseMatrix)
+      assert(sparse_m1_transposed.is_a? SparseMatrix)
+      assert(sparse_m2_transposed.is_a? SparseMatrix)
+      assert(sparse_m3_transposed.is_a? SparseMatrix)
+      assert(sparse_m4_transposed.is_a? SparseMatrix)
 
-      assert(sparse_m1.is_a SparseMatrix)
-      assert(sparse_m2.is_a SparseMatrix)
-      assert(sparse_m3.is_a SparseMatrix)
-      assert(sparse_m4.is_a SparseMatrix)
+      assert(sparse_m1.is_a? SparseMatrix)
+      assert(sparse_m2.is_a? SparseMatrix)
+      assert(sparse_m3.is_a? SparseMatrix)
+      assert(sparse_m4.is_a? SparseMatrix)
 
       assert(sparse_m1 == SparseMatrix.new(m1))
       assert(sparse_m2 == SparseMatrix.new(m2))
