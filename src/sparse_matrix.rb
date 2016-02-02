@@ -62,42 +62,70 @@ class SparseMatrix
     
     def empty?()
 
+        # Pre-conditions: None. The current object is already a SparseMatrix.
+    
     end
 
     # Array*Array^T=Identity=Array^T*Array
     def orthogonal?()
 
+        # Pre-conditions: None. The current object is already a SparseMatrix.
+    
     end
 
     def square?()
-      return true
+    
+        # Pre-conditions: None. The current object is already a SparseMatrix.
+      
     end
 
     def singular?()
+    
+        # Pre-conditions: None. The current object is already a SparseMatrix.
 
     end
 
     def invertible?()
+    
+        # Pre-conditions: None. The current object is already a SparseMatrix.
 
     end
 
     def diagonal?()
+    
+        # Pre-conditions: None. The current object is already a SparseMatrix.
 
     end
 
     def symmetric?()
+    
+        # Pre-conditions: None. The current object is already a SparseMatrix.
 
     end    
     
-    def equals(array)
+    def equals(m)
 
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        
+        # Implement equals.
+    
     end
     
-    def eql(array)
+    def eql(m)
 
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        
+        # Implement eql.
+    
     end
 
     def size()
+
+        # Pre-conditions: None. The current object is already a SparseMatrix.
 
     end
 end
