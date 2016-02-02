@@ -6,7 +6,7 @@ class SparseMatrix
     end
 
     def add(m)
-
+    
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
@@ -77,50 +77,66 @@ class SparseMatrix
     
     def empty?()
 
-        # Pre-conditions: None. The current object is already a SparseMatrix.
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     
     end
 
     # Array*Array^T=Identity=Array^T*Array
     def orthogonal?()
 
-        # Pre-conditions: None. The current object is already a SparseMatrix.
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     
     end
 
     def square?()
     
-        # Pre-conditions: None. The current object is already a SparseMatrix.
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
       
     end
 
     def singular?()
     
-        # Pre-conditions: None. The current object is already a SparseMatrix.
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
     end
 
     def invertible?()
     
-        # Pre-conditions: None. The current object is already a SparseMatrix.
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
     end
 
     def diagonal?()
     
-        # Pre-conditions: None. The current object is already a SparseMatrix.
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
     end
 
     def SparseMatrix.identity(size)
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
 
     def symmetric?()
     
-        # Pre-conditions: None. The current object is already a SparseMatrix.
-
-    end    
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
+    end 
     
     def equals(m)
 
@@ -140,11 +156,15 @@ class SparseMatrix
         
         # Implement eql.
     
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
     end
 
     def size()
 
-        # Pre-conditions: None. The current object is already a SparseMatrix.
-
+        # Pre-conditions: The current object (self) is already a SparseMatrix.
+        
+        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    
     end
 end
