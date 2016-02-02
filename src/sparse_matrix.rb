@@ -48,7 +48,11 @@ class SparseMatrix
     end
 
     def inverse()
+        # Pre-conditions. Non-square matrices are non-invertible.
+        if !(self.square?)
+            raise ArgumentError, "The object must be square to be invertible."
 
+        # Doing the post-condition by multiplying A*B=I would slow down our package.
     end
 
     def transpose()
