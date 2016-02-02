@@ -74,7 +74,12 @@ class SparseMatrix
     end
 
     def trace()
+        # Pre-conditions. Non-square matrices are non-invertible.
+        if !(self.square?)
+            raise ArgumentError, "The object must be square to find the trace."
+        end
 
+        # Post-condition: We return a trace of the matrix.
     end
 
     def determinant()
