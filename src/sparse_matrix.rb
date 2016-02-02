@@ -57,6 +57,13 @@ class SparseMatrix
 
     def transpose()
 
+        # No Pre-conditions
+
+        transposed = self
+
+        # Post conditions
+        if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
+            raise Error, "The transpose failed."
     end
 
     def rank()
