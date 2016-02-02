@@ -248,4 +248,10 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m2 == sparse_i_3)
       assert(sparse_m3 == sparse_i_4)
     end
+
+    def test_equal
+      array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
+      assert(SparseMatrix.new(array1).equals(Matrix.rows(array1)))
+    end
+
 end
