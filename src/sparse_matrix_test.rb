@@ -67,18 +67,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m3 = SparseMatrix.new(m3)
       sparse_m4 = SparseMatrix.new(m4)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-      assert(sparse_m4.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-      assert(sparse_m4 == SparseMatrix.new(m4))
-
-
       # calculate transposes
       sparse_m1_transposed = sparse_m1.transpose()
       sparse_m2_transposed = sparse_m2.transpose()
@@ -89,22 +77,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m2_transposed == sparse_m1)
       assert(sparse_m3_transposed == sparse_m3)
       assert(sparse_m4_transposed == SparseMatrix.new([[]]))
-
-      # post-conditions & invariants
-      assert(sparse_m1_transposed.is_a? SparseMatrix)
-      assert(sparse_m2_transposed.is_a? SparseMatrix)
-      assert(sparse_m3_transposed.is_a? SparseMatrix)
-      assert(sparse_m4_transposed.is_a? SparseMatrix)
-
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-      assert(sparse_m4.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-      assert(sparse_m4 == SparseMatrix.new(m4))
 
     end    
     
@@ -123,16 +95,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m1 = SparseMatrix.new(m1)
       sparse_m2 = SparseMatrix.new(m2)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-
-      assert(sparse_m1.square?)
-      assert(sparse_m2.square?)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-
       # calculate traces
       sparse_m1_trace = sparse_m1.trace()
       sparse_m2_trace = sparse_m2.trace()
@@ -140,15 +102,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m1_trace.eql? (1 + 3 + 1)) # sum of diagonals
       assert(sparse_m2_trace.eql? (8 + 3 + 4)) # bad number or exception?
 
-      # post-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-
-      assert(sparse_m1.square?)
-      assert(sparse_m2.square?)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
     end
     
     def test_determinant
@@ -219,19 +172,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m2 = SparseMatrix.new(m2)
       sparse_m3 = SparseMatrix.new(m3)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1.square?)
-      assert(sparse_m2.square?)
-      assert(sparse_m3.square?)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-
       # calculate diagonality
       sparse_m1_is_diagonal = sparse_m1.diagonal?
       sparse_m2_is_diagonal = sparse_m2.diagonal?
@@ -240,21 +180,8 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(sparse_m1_is_diagonal == false)
       assert(sparse_m2_is_diagonal == true)
       assert(sparse_m3_is_diagonal == false)
-
-      # post-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1.square?)
-      assert(sparse_m2.square?)
-      assert(sparse_m3.square?)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
     end
-    
+
     def test_symmetric?
       # https://en.wikipedia.org/wiki/Symmetric_matrix
       # assign 2d array to make into sparse matrices
@@ -271,28 +198,11 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m2 = SparseMatrix.new(m2)
       sparse_m3 = SparseMatrix.new(m3)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-
       # check
       assert(sparse_m1.symmetric? == false)
       assert(sparse_m2.symmetric? == false)
       assert(sparse_m3.symmetric? == true)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3)) 
     end
     
     def test_size
@@ -307,15 +217,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       sparse_m2 = SparseMatrix.new(m2)
       sparse_m3 = SparseMatrix.new(m3)
 
-      # pre-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
-
       # get sizes
       m1_size = sparse_m1.size()
       m2_size = sparse_m2.size()
@@ -325,14 +226,6 @@ class SparseMatrixTest < Test::Unit::TestCase
       assert(m2_size == [3,2])
       assert(m3_size == [0,0])
 
-      # post-conditions & invariants
-      assert(sparse_m1.is_a? SparseMatrix)
-      assert(sparse_m2.is_a? SparseMatrix)
-      assert(sparse_m3.is_a? SparseMatrix)
-
-      assert(sparse_m1 == SparseMatrix.new(m1))
-      assert(sparse_m2 == SparseMatrix.new(m2))
-      assert(sparse_m3 == SparseMatrix.new(m3))
     end
     
 end
