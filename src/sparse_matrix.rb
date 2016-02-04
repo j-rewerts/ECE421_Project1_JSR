@@ -9,8 +9,6 @@ class SparseMatrix
         attr_reader :x, :y
     end
 
-    end
-
     @sparse_hash
     @width
     @height
@@ -21,17 +19,30 @@ class SparseMatrix
         @sparse_hash = Hash.new
         @height = array.length
         @width = array[0].length
+        @sparse_hash.default = 0
+        
+        @j = 0
+        while @j < @height do
 
-        while j < @height do
-            while i < @width do
-                
-                if (array[i][j] != 0)
-                    point = Point.new(i, j)
-                    sparse_hash[point] = array[i][j]
+            @i = 0
+            while @i < @width do
+                puts @i
+                if (array[@j][@i] != 0)
+                    puts "Test"
+                    @point = Point.new(@i, @j)
+                    @sparse_hash[@point] = array[@j][@i]
                 end
 
+                @i += 1
             end
+
+            @j += 1
         end
+    end
+
+    def get(x, y)
+        @point = Point.new(@i, @j)
+        return @sparse_hash[@point]
     end
 
     def add(m)
