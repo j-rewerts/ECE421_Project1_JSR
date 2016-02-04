@@ -1,13 +1,6 @@
+require "./point.rb"
 
-class SparseMatrix
-
-    class Point
-        def initialize(x,y)  
-            @x, @y = x,y  
-        end
-
-        attr_reader :x, :y
-    end
+class SparseMatrix    
 
     @sparse_hash
     @width
