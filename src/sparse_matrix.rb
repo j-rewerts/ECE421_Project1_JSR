@@ -1,8 +1,37 @@
 
 class SparseMatrix
 
+    class Point
+        def initialize(x,y)  
+            @x, @y = x,y  
+        end
+
+        attr_reader :x, :y
+    end
+
+    end
+
+    @sparse_hash
+    @width
+    @height
+
+    # Iterate through the passed array, only adding non-zero values to the hash.
     def initialize(array)
-    # Take the array and shove it into whatever
+        # Take the array and shove it into whatever
+        @sparse_hash = Hash.new
+        @height = array.length
+        @width = array[0].length
+
+        while j < @height do
+            while i < @width do
+                
+                if (array[i][j] != 0)
+                    point = Point.new(i, j)
+                    sparse_hash[point] = array[i][j]
+                end
+
+            end
+        end
     end
 
     def add(m)
@@ -21,6 +50,7 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+        end
 
     end
 
@@ -29,6 +59,7 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+        end
 
     end
 
@@ -38,6 +69,7 @@ class SparseMatrix
         # Check pre-conditions: value must be an Integer
         if !(value.is_a? Integer)
             raise TypeError, "The input object is not an Integer. It is a #{value.class}."
+        end
 
     end
 
@@ -46,12 +78,14 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+        end
     end
 
     def inverse()
         # Pre-conditions. Non-square matrices are non-invertible.
         if !(self.square?)
             raise ArgumentError, "The object must be square to be invertible."
+        end
 
         # Doing the post-condition by multiplying A*B=I would slow down our package.
     end
@@ -65,6 +99,7 @@ class SparseMatrix
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
             raise Error, "The transpose failed."
+        end
     end
 
     def rank()
@@ -169,6 +204,7 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        end
         
         # Implement equals.
     
@@ -179,6 +215,7 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        end
         
         # Implement eql.
     
