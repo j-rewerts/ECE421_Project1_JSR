@@ -23,7 +23,7 @@ class SparseMatrix
                 if (array[@j][@i] != 0)
                     puts "Test"
                     @point = Point.new(@i, @j)
-                    @sparse_hash[@point] = array[@j][@i]
+                    @sparse_hash[@point.hash] = array[@j][@i]
                 end
 
                 @i += 1
@@ -33,10 +33,12 @@ class SparseMatrix
         end
     end
 
-    def get(x, y)
-        @point = Point.new(@i, @j)
-        return @sparse_hash[@point]
+    def [](x, y)
+        point = Point.new(x, y)
+        return @sparse_hash[point.hash]
     end
+
+    alias get []
 
     def add(m)
     
