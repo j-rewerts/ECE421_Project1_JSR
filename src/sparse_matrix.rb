@@ -1,8 +1,10 @@
 require "./point.rb"
+require "matrix"
 
 class SparseMatrix    
 
     @sparse_hash
+    @sparse_matrix
     @width
     @height
 
@@ -10,20 +12,28 @@ class SparseMatrix
     def initialize(array)
         # Take the array and shove it into whatever
         @sparse_hash = Hash.new
+        
+
         @height = array.length
+        if (array[0].empty?)
+            @height = 0
+        end
+
         @width = array[0].length
         @sparse_hash.default = 0
         
+        @sparse_matrix = Matrix.rows(array)
+
         @j = 0
         while @j < @height do
 
             @i = 0
             while @i < @width do
-                puts @i
+
                 if (array[@j][@i] != 0)
-                    puts "Test"
-                    @point = Point.new(@i, @j)
-                    @sparse_hash[@point.hash] = array[@j][@i]
+                    
+                    point = Point.new(@i, @j)
+                    @sparse_hash[point.hash] = array[@j][@i]
                 end
 
                 @i += 1
@@ -93,6 +103,9 @@ class SparseMatrix
             raise ArgumentError, "The object must be square to be invertible."
         end
 
+        # Delegate to Matrix
+        return @sparse_matrix.inverse
+
         # Doing the post-condition by multiplying A*B=I would slow down our package.
     end
 
@@ -100,19 +113,28 @@ class SparseMatrix
 
         # No Pre-conditions
 
-        transposed = self
+        if (empty?)
+            return nil
+        end
+
+        transposed = SparseMatrix.new(@sparse_matrix.transpose.to_a)
 
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
             raise Error, "The transpose failed."
         end
+
+        return transposed
     end
 
     def rank()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
+        rankVal = @sparse_matrix.rank
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
+        return rankVal
     end
 
     def trace()
@@ -121,25 +143,36 @@ class SparseMatrix
             raise ArgumentError, "The object must be square to find the trace."
         end
 
+        traceVal = @sparse_matrix.trace
+
         # Post-condition: We return a trace of the matrix.
+
+        return traceVal
     end
 
     def determinant()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
+        detVal = @sparse_matrix.determinant
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+        return detVal
     end
 
     def row_count()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+
+        return @height
     end
     
     def column_count()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+
+        return @width
     end
     
     def empty?()
@@ -147,7 +180,8 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+        
+        return @sparse_hash.empty?
     end
 
     # Array*Array^T=Identity=Array^T*Array
@@ -156,7 +190,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+        return @sparse_matrix.orthogonal?
     end
 
     def square?()
@@ -164,7 +198,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-      
+        return @sparse_matrix.square?
     end
 
     def singular?()
@@ -172,6 +206,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+        return @sparse_matrix.singular?
     
     end
 
@@ -180,7 +215,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+        return @sparse_matrix.invertible?
     end
 
     def diagonal?()
@@ -188,12 +223,13 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+        return @sparse_matrix.diagonal?
     end
 
     def SparseMatrix.identity(size)
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
 
@@ -202,7 +238,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+        return @sparse_matrix.symmetric?
     end 
     
     def equals(m)
@@ -235,5 +271,6 @@ class SparseMatrix
         
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     
+        return [row_count, column_count]
     end
 end
