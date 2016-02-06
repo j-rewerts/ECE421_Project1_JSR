@@ -1,7 +1,7 @@
 require "./point.rb"
 require "matrix"
 
-class SparseMatrix    
+class SparseMatrix
 
     @sparse_hash
     @sparse_matrix
@@ -12,16 +12,16 @@ class SparseMatrix
     def initialize(array)
         # Take the array and shove it into whatever
         @sparse_hash = Hash.new
-        
+
 
         @height = array.length
-        if (array[0].empty?)
-            @height = 0
-        end
+        #if (array[0].empty?)
+        #    @height = 0
+        #end
 
         @width = array[0].length
         @sparse_hash.default = 0
-        
+
         @sparse_matrix = Matrix.rows(array)
 
         @j = 0
@@ -31,9 +31,9 @@ class SparseMatrix
             while @i < @width do
 
                 if (array[@j][@i] != 0)
-                    
+
                     point = Point.new(@i, @j)
-                    @sparse_hash[point.hash] = array[@j][@i]
+                    @sparse_hash[point] = array[@j][@i]
                 end
 
                 @i += 1
@@ -45,20 +45,20 @@ class SparseMatrix
 
     def [](x, y)
         point = Point.new(x, y)
-        return @sparse_hash[point.hash]
+        return @sparse_hash[point]
     end
 
     alias get []
 
     def add(m)
-    
+
         typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
-        
+
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
-    
+
         # Implement adding functionality.
-   
+
     end
 
     def subtract(array)
@@ -70,14 +70,64 @@ class SparseMatrix
 
     end
 
+    def column_vector(column)
+        vec = []
+        @sparse_hash.each do |key, value|
+            vec.push([value]) unless key.x != column
+        end
+        return SparseMatrix.new(vec)
+    end
+
+    def row_vector(row)
+        vec = [[]]
+        @sparse_hash.each do |key, value|
+            vec[0].push(value) unless key.y != row
+        end
+        return SparseMatrix.new(vec)
+    end
+
     def matrix_multiply(array)
+        m = array
+        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
+
+        if self.size[1] == array.size[0] && self.size[0] == 1 && array.size[1] == 1 then
+            # return scalar
+            # args are vectors
+            val = 0
+            @sparse_hash.each do |key, value|
+                val += value * array[key.y, key.x]
+            end
+            return val
+        elsif self.size[1] == array.size[0] && (self.size[0] != 1 || array.size[1] != 1) then
+            product_matrix = Hash.new
+            product_matrix.default = 0
+            x=0
+            while x < self.size[0] do
+                y=0
+                while y < array.size[1] do
+                    t = self.row_vector(x)
+                    r = array.column_vector(y)
+                    product_matrix[Point.new(x,y)] = t * r
+                    y += 1
+                end
+                x += 1
+            end
+            return product_matrix
+            # product_matrix = Hash.new
+            # product_matrix.default = 0
+            # @sparse_hash.each do |key, value|
+            #     product_matrix[key.x, key.y] += array[key] * value
+            # end
         end
 
+
     end
+
+    alias * matrix_multiply
 
     # This function may not need to exist. It could just be part of the other multiply function
     def scalar_multiply(value)
@@ -129,7 +179,7 @@ class SparseMatrix
 
     def rank()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         rankVal = @sparse_matrix.rank
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
@@ -152,7 +202,7 @@ class SparseMatrix
 
     def determinant()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         detVal = @sparse_matrix.determinant
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
@@ -161,26 +211,26 @@ class SparseMatrix
 
     def row_count()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
         return @height
     end
-    
+
     def column_count()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
         return @width
     end
-    
+
     def empty?()
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        
+
         return @sparse_hash.empty?
     end
 
@@ -188,89 +238,89 @@ class SparseMatrix
     def orthogonal?()
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.orthogonal?
     end
 
     def square?()
-    
+
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.square?
     end
 
     def singular?()
-    
+
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.singular?
-    
+
     end
 
     def invertible?()
-    
+
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.invertible?
     end
 
     def diagonal?()
-    
+
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.diagonal?
     end
 
     def SparseMatrix.identity(size)
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
 
     def symmetric?()
-    
+
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.symmetric?
-    end 
-    
+    end
+
     def equals(m)
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
         end
-        
+
         # Implement equals.
-    
+
     end
-    
+
     def eql(m)
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
         end
-        
+
         # Implement eql.
-    
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+
     end
 
     def size()
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-        
+
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-    
+
         return [row_count, column_count]
     end
 end
