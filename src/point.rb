@@ -7,9 +7,7 @@ class Point
         return other.instance_of?(self.class) && @x == other.x && @y == other.y
     end
 
-    def eql?(other)
-        self == other
-    end
+    alias eql? ==
 
     def hash
       [x,y].hash
