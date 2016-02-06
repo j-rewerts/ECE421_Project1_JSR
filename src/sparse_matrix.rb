@@ -1,7 +1,7 @@
 require "./point.rb"
 require "matrix"
 
-class SparseMatrix    
+class SparseMatrix
 
     @sparse_hash
     @sparse_matrix
@@ -12,34 +12,34 @@ class SparseMatrix
     def initialize(array)
         # Take the array and shove it into whatever
         @sparse_hash = Hash.new
-        
+
 
         @height = array.length
-        if (array[0].empty?)
-            @height = 0
-        end
+        # if (array[0].empty?)
+        #     @height = 0
+        # end
 
         @width = array[0].length
         @sparse_hash.default = 0
-        
+
         @sparse_matrix = Matrix.rows(array)
 
-        @j = 0
-        while @j < @height do
+        @i = 0
+        while @i < @height do
 
-            @i = 0
-            while @i < @width do
+            @j = 0
+            while @j < @width do
 
-                if (array[@j][@i] != 0)
-                    
+                if (array[@i][@j] != 0)
+
                     point = Point.new(@i, @j)
-                    @sparse_hash[point.hash] = array[@j][@i]
+                    @sparse_hash[point.hash] = array[@i][@j]
                 end
 
-                @i += 1
+                @j += 1
             end
 
-            @j += 1
+            @i += 1
         end
     end
 
