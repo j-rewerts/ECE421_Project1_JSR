@@ -15,9 +15,9 @@ class SparseMatrix
 
 
         @height = array.length
-        # if (array[0].empty?)
-        #     @height = 0
-        # end
+        if (array[0].empty?)
+            @height = 0
+        end
 
         @width = array[0].length
         @sparse_hash.default = 0
