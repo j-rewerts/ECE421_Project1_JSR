@@ -21,7 +21,7 @@ class SparseMatrix
 
         @width = array[0].length
         @sparse_hash.default = 0
-
+        @equality_hash = 0
         @sparse_matrix = Matrix.rows(array)
 
         @i = 0
@@ -33,7 +33,8 @@ class SparseMatrix
                 if (array[@i][@j] != 0)
 
                     point = Point.new(@i, @j)
-                    @sparse_hash[point.hash] = array[@i][@j]
+                    @sparse_hash[point] = array[@i][@j]
+                    @equality_hash += array[@i][@j].hash
                 end
 
                 @j += 1
@@ -43,12 +44,21 @@ class SparseMatrix
         end
     end
 
+    def hash
+        return @equality_hash
+    end
+
     def [](x, y)
         point = Point.new(x, y)
         return @sparse_hash[point]
     end
 
     alias get []
+
+    def set_element(key,value)
+        @sparse_hash[key] = value
+        @equality_hash += value.hash
+    end
 
     def add(m)
 
@@ -72,27 +82,38 @@ class SparseMatrix
 
     def column_vector(column)
         vec = []
-        @sparse_hash.each do |key, value|
-            vec.push([value]) unless key.x != column
+        c = 0
+        while c < @height do
+            vec.push([self[c, column]])
+            c += 1
         end
         return SparseMatrix.new(vec)
     end
 
     def row_vector(row)
         vec = [[]]
-        @sparse_hash.each do |key, value|
-            vec[0].push(value) unless key.y != row
+        c = 0
+        while c < @width do
+            vec[0].push(self[row, c])
+            c += 1
         end
         return SparseMatrix.new(vec)
     end
 
+
     def matrix_multiply(array)
+        case array
+        when Array
+            array = SparseMatrix.new(array)
+        end
+
         m = array
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
+
 
         if self.size[1] == array.size[0] && self.size[0] == 1 && array.size[1] == 1 then
             # return scalar
@@ -103,15 +124,14 @@ class SparseMatrix
             end
             return val
         elsif self.size[1] == array.size[0] && (self.size[0] != 1 || array.size[1] != 1) then
-            product_matrix = Hash.new
-            product_matrix.default = 0
+            product_matrix = SparseMatrix.new([[]])
             x=0
             while x < self.size[0] do
                 y=0
                 while y < array.size[1] do
                     t = self.row_vector(x)
                     r = array.column_vector(y)
-                    product_matrix[Point.new(x,y)] = t * r
+                    product_matrix.set_element(Point.new(x,y), t * r)
                     y += 1
                 end
                 x += 1
@@ -302,17 +322,27 @@ class SparseMatrix
 
     end
 
-    def eql(m)
-
+    def eql?(m)
+        case m
+        when Array
+            m = SparseMatrix.new(m)
+        end
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
+        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix) and !(m.is_a? Array)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
         end
 
         # Implement eql.
-
+        return self.hash == m.hash
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
+    end
+
+    alias eql eql?
+    alias == eql?
+
+    def to_a
+        return @sparse_matrix.to_a
     end
 
     def size()
