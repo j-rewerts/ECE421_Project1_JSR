@@ -1,4 +1,4 @@
-require "./point.rb"
+require "./src/point.rb"
 require "matrix"
 
 class SparseMatrix
