@@ -336,14 +336,22 @@ class SparseMatrix
             else
                 m = SparseMatrix.new(m)
             end
-        end
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix) and !(m.is_a? Array)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+            return self.hash == m.hash
+
+        when Matrix
+            m = SparseMatrix.new(m.to_a)
+            return self.hash == m.hash
+        when SparseMatrix
+            return self.hash == m.hash
         end
 
+        return false
+        # # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+        # if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix) and !(m.is_a? Array)
+        #     raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        # end
+
         # Implement eql.
-        return self.hash == m.hash
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
     end
