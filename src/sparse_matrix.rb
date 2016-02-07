@@ -50,6 +50,7 @@ class SparseMatrix
         return @equality_hash
     end
 
+    # Format is [row, column]
     def [](x, y)
         point = Point.new(x, y)
         return @sparse_hash[point]
@@ -66,6 +67,14 @@ class SparseMatrix
         if @sparse_hash[key] != 0
             @equality_hash = @equality_hash - @sparse_hash[key].hash
         end
+
+        if key.x >= @width
+            @width = key.x + 1
+        end
+        if key.y >= @height
+            @height = key.y + 1
+        end
+
         @sparse_hash[key] = value
         @equality_hash += value.hash
         begin
@@ -219,7 +228,18 @@ class SparseMatrix
     end
 
     def transpose()
-        transposed = SparseMatrix.new(@sparse_matrix.transpose.to_a)
+        # Initialize the array based upon size of the hash
+        arrayOuter = Array.new(@width)        
+        for i in 0..@width - 1
+            arrayOuter[i] = Array.new(@height, 0)
+        end
+
+        # Iterate through, flipping all the spots x and y
+        @sparse_hash.each { |key, value|
+            arrayOuter[key.y][key.x] = value
+        }
+
+        transposed = SparseMatrix.new(arrayOuter)
 
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
