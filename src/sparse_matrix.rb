@@ -58,8 +58,18 @@ class SparseMatrix
     alias get []
 
     def set_element(key,value)
+        if @sparse_hash[key] != 0
+            @equality_hash = @equality_hash - @sparse_hash[key].hash
+        end
         @sparse_hash[key] = value
         @equality_hash += value.hash
+        begin
+            arr = @sparse_matrix.to_a
+            arr[key.x][key.y] = value
+            @sparse_matrix = Matrix.rows(arr)
+        rescue
+            
+        end
     end
 
     def add(m)
@@ -162,11 +172,23 @@ class SparseMatrix
     end
 
     def elementwise_multiply(array)
-
+        case array
+        when Array
+            array = SparseMatrix.new(array)
+        end
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
         end
+
+        product_matrix = self.clone
+        @sparse_hash.each do |key, value|
+            product_matrix.set_element(
+                Point.new(key.x,key.y),
+                value * array[key.x,key.y]
+            )
+        end
+        return product_matrix
     end
 
     def inverse()
@@ -306,9 +328,14 @@ class SparseMatrix
     end
 
     def eql?(m)
+        #        puts "tried"
         case m
         when Array
-            m = SparseMatrix.new(m)
+            if m == self.to_a
+                return true
+            else
+                m = SparseMatrix.new(m)
+            end
         end
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix) and !(m.is_a? Array)
