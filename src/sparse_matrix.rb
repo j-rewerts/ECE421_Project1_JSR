@@ -289,9 +289,6 @@ class SparseMatrix
     # Array*Array^T=Identity=Array^T*Array
     def orthogonal?()
         return false unless self.square?
-        puts (self * self.transpose).hash
-        puts SparseMatrix.new(Matrix.identity(self.size[0]).to_a).hash
-        puts (self * self.transpose) == SparseMatrix.new(Matrix.identity(self.size[0]).to_a)
         return (self * self.transpose) == Matrix.identity(self.size[0]) ? true : false
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
