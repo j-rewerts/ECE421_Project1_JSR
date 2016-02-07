@@ -55,6 +55,11 @@ class SparseMatrix
         return @sparse_hash[point]
     end
 
+    def set_size(rows, columns)
+        @height = rows
+        @width  = columns
+    end
+
     alias get []
 
     def set_element(key,value)
@@ -146,13 +151,14 @@ class SparseMatrix
             return val
         elsif self.size[1] == array.size[0] && (self.size[0] != 1 || array.size[1] != 1) then
             product_matrix = SparseMatrix.new([[]])
+            product_matrix.set_size(self.size[1], array.size[0])
             x=0
             while x < self.size[0] do
                 y=0
                 while y < array.size[1] do
                     t = self.row_vector(x)
                     r = array.column_vector(y)
-                    product_matrix.set_element(Point.new(x,y), t * r)
+                    product_matrix.set_element(Point.new(x,y), (t * r).to_int)
                     y += 1
                 end
                 x += 1
@@ -282,6 +288,11 @@ class SparseMatrix
 
     # Array*Array^T=Identity=Array^T*Array
     def orthogonal?()
+        return false unless self.square?
+        puts (self * self.transpose).hash
+        puts SparseMatrix.new(Matrix.identity(self.size[0]).to_a).hash
+        puts (self * self.transpose) == SparseMatrix.new(Matrix.identity(self.size[0]).to_a)
+        return (self * self.transpose) == Matrix.identity(self.size[0]) ? true : false
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
@@ -358,9 +369,9 @@ class SparseMatrix
 
         when Matrix
             m = SparseMatrix.new(m.to_a)
-            return self.hash == m.hash
+            return self.to_a == m.to_a
         when SparseMatrix
-            return self.hash == m.hash
+            return self.to_a == m.to_a
         end
 
         return false
@@ -379,6 +390,23 @@ class SparseMatrix
     alias equals eql?
 
     def to_a
+        if [@sparse_matrix.row_count,@sparse_matrix.column_count] == self.size
+            return @sparse_matrix.to_a
+        end
+        # @height = @sparse_matrix.row_count
+        # @width = @sparse_matrix.column_count
+        @sparse_matrix = []
+        @i = 0
+        while @i < @height do
+            @sparse_matrix.push([])
+            @j = 0
+            while @j < @width do
+                @sparse_matrix[@i].push(self[@i,@j])
+                @j += 1
+            end
+            @i += 1
+        end
+        @sparse_matrix = Matrix.rows(@sparse_matrix)
         return @sparse_matrix.to_a
     end
 
