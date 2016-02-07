@@ -227,6 +227,11 @@ class SparseMatrix
         # Doing the post-condition by multiplying A*B=I would slow down our package.
     end
 
+    # Returns a flipped version of the sparse matrix.
+    # 0 3 5 0       0 7 0
+    # 7 1 0 0  ==>  3 1 0
+    # 0 0 1 3       5 0 1
+    #               0 0 3
     def transpose()
         # Initialize the array based upon size of the hash
         arrayOuter = Array.new(@width)        
