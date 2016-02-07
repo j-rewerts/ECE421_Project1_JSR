@@ -15,11 +15,13 @@ class SparseMatrix
 
 
         @height = array.length
-        if (array[0].empty?)
+        if (array.empty? || array[0].empty?)
             @height = 0
+            @width = 0
+        else
+            @width = array[0].length
         end
 
-        @width = array[0].length
         @sparse_hash.default = 0
         @equality_hash = 0
         @sparse_matrix = Matrix.rows(array)
@@ -180,13 +182,6 @@ class SparseMatrix
     end
 
     def transpose()
-
-        # No Pre-conditions
-
-        if (empty?)
-            return nil
-        end
-
         transposed = SparseMatrix.new(@sparse_matrix.transpose.to_a)
 
         # Post conditions
