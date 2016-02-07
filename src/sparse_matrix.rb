@@ -297,10 +297,9 @@ class SparseMatrix
     end
 
     def SparseMatrix.identity(size)
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+        raise ArgumentError unless size.is_a? Integer
+        sparse_m1 = SparseMatrix.new(Matrix.identity(size).to_a)
+        return sparse_m1.size() == [size,size] ? sparse_m1 : nil
     end
 
     def symmetric?()
@@ -309,17 +308,6 @@ class SparseMatrix
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         return @sparse_matrix.symmetric?
-    end
-
-    def equals(m)
-
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
-        end
-
-        # Implement equals.
-
     end
 
     def eql?(m)
@@ -340,6 +328,7 @@ class SparseMatrix
 
     alias eql eql?
     alias == eql?
+    alias equals eql?
 
     def to_a
         return @sparse_matrix.to_a
