@@ -115,6 +115,15 @@ class SparseMatrix
 
     def matrix_multiply(array)
         case array
+        when Fixnum
+            product_matrix = self.clone
+            @sparse_hash.each do |key, value|
+                product_matrix.set_element(
+                    key,
+                    value*array
+                )
+            end
+            return product_matrix
         when Array
             array = SparseMatrix.new(array)
         end
@@ -160,16 +169,16 @@ class SparseMatrix
     end
 
     alias * matrix_multiply
+    alias scalar_multiply matrix_multiply
+    # # This function may not need to exist. It could just be part of the other multiply function
+    # def scalar_multiply(value)
 
-    # This function may not need to exist. It could just be part of the other multiply function
-    def scalar_multiply(value)
+    #     # Check pre-conditions: value must be an Integer
+    #     if !(value.is_a? Integer)
+    #         raise TypeError, "The input object is not an Integer. It is a #{value.class}."
+    #     end
 
-        # Check pre-conditions: value must be an Integer
-        if !(value.is_a? Integer)
-            raise TypeError, "The input object is not an Integer. It is a #{value.class}."
-        end
-
-    end
+    # end
 
     def elementwise_multiply(array)
         case array
@@ -320,11 +329,16 @@ class SparseMatrix
     end
 
     def symmetric?()
+        # http://mathworld.wolfram.com/SymmetricMatrix.html
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
-
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.symmetric?
+        if self.size[0] == self.size[1]
+            return @sparse_matrix.symmetric?
+        else
+            return false
+        end
+
     end
 
     def eql?(m)
