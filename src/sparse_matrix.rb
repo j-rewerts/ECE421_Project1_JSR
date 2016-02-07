@@ -319,7 +319,11 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.diagonal?
+        if self.square?
+            return @sparse_matrix.diagonal?
+        else
+            return false
+        end
     end
 
     def SparseMatrix.identity(size)
