@@ -9,6 +9,8 @@ class SparseMatrix
     # @height
     # @equality_hash
 
+    # attr_reader :sparse_hash
+    
     # Iterate through the passed-in array, only adding non-zero values to the hash.
     def initialize(array)
         @sparse_hash = Hash.new
@@ -71,6 +73,7 @@ class SparseMatrix
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
 
         # Implement adding functionality.
+        
 
     end
 
@@ -561,14 +564,24 @@ class SparseMatrix
         return [row_count, column_count]
     end
     
-    #
+    # Sparsity is defined as the fraction of zero-elements over the total number of elements.
+    def sparsity()
+        total_elements = size[0]*size[1]
+        (total_elements - @sparse_hash.size) / total_elements.to_f
+    end
+    
+    # Density is defined as the fraction of nonzero-elements over the total number of elements.
+    def density()
+        total_elements = size[0]*size[1]
+        @sparse_hash.size / total_elements.to_f
+    end
+    
     # Overrides Object#to_s
     # Printout for SparseMatrix. Delegates to the Matrix class.
     def to_s
         to_m().to_s.sub("Matrix", "SparseMatrix")
     end
 
-    #
     # Overrides Object#inspect
     # Printout for SparseMatrix. Delegates to the Matrix class.
     def inspect

@@ -1,4 +1,7 @@
 class Point
+
+    attr_reader :x, :y
+
     def initialize(x,y)  
         @x, @y = x,y  
     end
@@ -12,6 +15,17 @@ class Point
     def hash
       [x,y].hash
     end
-
-    attr_reader :x, :y
+    
+    # Overrides Object#to_s
+    # Printout for Point.
+    def to_s
+        "#{self.class}[" + @x.to_s + ", " + @y.to_s + "]"
+    end
+    
+    # Overrides Object#inspect
+    # Printout for Point.
+    def inspect
+        "#{self.class}[" + @x.inspect + ", " + @y.inspect + "]"
+    end
+    
 end

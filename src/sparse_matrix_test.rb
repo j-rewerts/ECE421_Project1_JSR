@@ -251,7 +251,21 @@ class SparseMatrixTest < Test::Unit::TestCase
         assert(m3_size == [0,0])
 
     end
-
+    
+    # Sparsity is defined as the fraction of zero-elements over the total number of elements.
+    def test_sparsity()
+        m = [[0, 1], [0, 0]]
+        m_sparsity = 3/4.to_f
+        assert_equal(SparseMatrix.new(m).sparsity, m_sparsity)
+    end
+    
+    # Density is defined as the fraction of nonzero-elements over the total number of elements.
+    def test_density()
+        m = [[0, 1], [0, 0]]
+        m_density = 1/4.to_f
+        assert_equal(SparseMatrix.new(m).density, m_density)
+    end
+    
     def test_identity
         i_2 = [[1,0], [0,1]]
         i_3 = [[1,0,0], [0,1,0], [0,0,1]]
