@@ -277,13 +277,104 @@ class SparseMatrix
         return traceVal
     end
 
+    # Determinant for a 2x2 matrix: [a b] ==> ad - bc
+    #                               [c d]
+    #
+    # Determinants for larger square matrices (3x3): [a b c]
+    #                                                [d e f] ==> a * [e f] - b * [d f] + c * [e f]  
+    #                                                [g h i]         [h i]       [g i]       [h i]
+    # Then get the determinants for the smaller matrices.
     def determinant()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
+        if !(self.square?)
+            raise ArgumentError, "The object must be square to find the determinant."
+        end
 
-        detVal = @sparse_matrix.determinant
+        puts "Size: #{@width}"
+        print()
+
+        row = 0
+
+        # When the internal array is a 2x2, just return the current det value.
+        if @height == 2 and @width == 2
+            rVal = get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)
+            puts "  Value: #{rVal}"
+            return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0) # ad-bc
+
+        end        
+
+        rVal = 0
+        # recursively break up the array
+        for i in 0..@width - 1
+            babyArray = get_minor(row, i)
+
+            babyMatrix = SparseMatrix.new(babyArray)
+
+            rVal = rVal + (-1) ** ((row + 1) * (i + 1)) * get(row, i) * babyMatrix.determinant
+
+        end
+
+
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return detVal
+        return rVal
+    end
+
+    # A helper function for getting the determinant. This will get the subarray
+    # for this sparse matrix. 
+    # Note: This returns an array object
+    def get_minor(row, column)
+        # Pre-condition
+        if (column >= @width)
+            raise ArgumentError, "The row and column must be less than the matrix size."
+        end
+
+        # build an array to hold the new sub-array
+        subArray = Array.new(@height - 1)  
+        for subi in 0..@height - 2
+            subArray[subi] = Array.new(@width - 1, 0)
+        end
+
+        # Fill the array with data so long as it isn't from the current value's row/col
+        @sparse_hash.each { |key, value|
+            if key.y == column
+                next
+            end
+            if key.x == row
+                next
+            end
+
+            if key.y > column
+
+                if key.x > row
+                    subArray[key.x - 1][key.y - 1] = value
+                elsif key.x < row
+                    subArray[key.x][key.y - 1] = value
+                end
+                
+            elsif key.y < column
+
+                if key.x > row
+                    subArray[key.x - 1][key.y] = value
+                elsif key.x < row
+                    subArray[key.x][key.y] = value
+                end
+
+            end
+            #puts "X: #{key.x} Y: #{key.y} Value: #{value}"
+
+            
+        }
+
+        return subArray
+    end
+
+    def print()
+        array = to_a
+        
+        array.cycle(1) { |inner| 
+            p inner
+        }
     end
 
     def row_count()
@@ -440,4 +531,5 @@ class SparseMatrix
 
         return [row_count, column_count]
     end
+
 end
