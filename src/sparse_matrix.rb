@@ -178,7 +178,7 @@ class SparseMatrix
                 while y < array.size[1] do
                     t = self.row_vector(x)
                     r = array.column_vector(y)
-                    product_matrix.set_element(Point.new(x,y), (t * r).to_a[0][0])
+                    product_matrix.set_element(Point.new(x,y), (t * r)[0,0])
                     y += 1
                 end
                 x += 1
