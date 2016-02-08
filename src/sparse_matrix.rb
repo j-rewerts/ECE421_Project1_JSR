@@ -9,7 +9,11 @@ class SparseMatrix
     # @height
     # @equality_hash
 
-    # attr_reader :sparse_hash
+    attr_reader :sparse_hash
+    
+    # Exception for mismatching/incompatible dimensions during matrix operations.
+    class DimensionError < StandardError
+    end
     
     # Iterate through the passed-in array, only adding non-zero values to the hash.
     def initialize(array)
@@ -53,10 +57,10 @@ class SparseMatrix
             @equality_hash = @equality_hash - @sparse_hash[key].hash
         end
 
-        if key.x >= @width
+        if key.x > @width
             @width = key.x + 1
         end
-        if key.y >= @height
+        if key.y > @height
             @height = key.y + 1
         end
 
@@ -65,6 +69,15 @@ class SparseMatrix
 
     end
 
+    # Returns a new, empty (zeroed) SparseMatrix of size {height x width}.
+    #
+    # Example:
+    # empty(2, 3) --> [[0, 0, 0], [0, 0, 0]]
+    #
+    def empty(height, width)
+        SparseMatrix.new(Array.new(height) {Array.new(width) {0}})
+    end
+    
     def add(m)
 
         typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a(n) #{m.class}."
@@ -72,20 +85,38 @@ class SparseMatrix
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
 
-        # Implement adding functionality.
+        # Matrix addition is only defined when the sizes are exactly the same.
+        raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
         
-
+        sum_matrix = SparseMatrix.new(m.to_a)
+        @sparse_hash.each {|p, v| sum_matrix.set_element(p, v + sum_matrix[p.x, p.y])}
+        sum_matrix
     end
 
-    def subtract(array)
+    def +(m)
+        add(m)
+    end
+    
+    def subtract(m)
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(array.is_a? Matrix) and !(array.is_a? SparseMatrix)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
+        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
+            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
         end
 
+        # Matrix addition is only defined when the sizes are exactly the same.
+        raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+        
+        difference_matrix = empty(@height, @width)
+        m.to_a.each_with_index {|row, row_num| row.each_with_index {|val, col_num| difference_matrix.set_element(Point.new(row_num, col_num), -val)}}
+        @sparse_hash.each {|p, v| difference_matrix.set_element(p, v + difference_matrix[p.x, p.y])}
+        difference_matrix
     end
 
+    def -(m)
+        subtract(m)
+    end    
+    
     def column_vector(column)
         vec = []
         c = 0
