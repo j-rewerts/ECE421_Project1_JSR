@@ -1,59 +1,52 @@
-require "./point.rb"
+require_relative "point"
 require "matrix"
 
 class SparseMatrix
 
-    @sparse_hash
-    @sparse_matrix
-    @width
-    @height
+    # Instance variables for SparseMatrix:
+    # @sparse_hash
+    # @sparse_matrix
+    # @width
+    # @height
+    # @equality_hash
 
-    # Iterate through the passed array, only adding non-zero values to the hash.
+    # Iterate through the passed-in array, only adding non-zero values to the hash.
     def initialize(array)
-        # Take the array and shove it into whatever
         @sparse_hash = Hash.new
-
-
-        @height = array.length
-        if (array.empty? || array[0].empty?)
-            @height = 0
-            @width = 0
-        else
-            @width = array[0].length
-        end
-
         @sparse_hash.default = 0
+        @height = array.length
+        array[0] ? @width = array[0].length : @width = 0
         @equality_hash = 0
         @sparse_matrix = Matrix.rows(array)
+        
+        i = 0
+        while i < @height do
 
-        @i = 0
-        while @i < @height do
+            j = 0
+            while j < @width do
 
-            @j = 0
-            while @j < @width do
+                if (array[i][j] != 0)
 
-                if (array[@i][@j] != 0)
-
-                    point = Point.new(@i, @j)
-                    @sparse_hash[point] = array[@i][@j]
-                    @equality_hash += array[@i][@j].hash
+                    point = Point.new(i, j)
+                    @sparse_hash[point] = array[i][j]
+                    @equality_hash += array[i][j].hash
                 end
 
-                @j += 1
+                j += 1
             end
 
-            @i += 1
+            i += 1
         end
     end
 
     def hash
-        return @equality_hash
+        @equality_hash
     end
 
     # Format is [row, column]
     def [](x, y)
         point = Point.new(x, y)
-        return @sparse_hash[point]
+        @sparse_hash[point]
     end
 
     def set_size(rows, columns)
@@ -88,7 +81,7 @@ class SparseMatrix
 
     def add(m)
 
-        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a(n) #{m.class}."
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
