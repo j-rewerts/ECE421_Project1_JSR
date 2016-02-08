@@ -50,7 +50,7 @@ class SparseMatrixTest < Test::Unit::TestCase
         array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
         result = Matrix.rows(array1).inverse().to_a()
         
-        SparseMatrix.new(array1).inverse().print()
+        #SparseMatrix.new(array1).inverse().print()
 
         assert_equal(SparseMatrix.new(array1).inverse().to_a(), result)
     end

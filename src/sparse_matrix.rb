@@ -24,9 +24,9 @@ class SparseMatrix
         array.each_with_index do |row, row_num|
             row.each_with_index do |val, col_num|
                 @sparse_hash[Point.new(row_num, col_num)] = val unless val == 0
+                @equality_hash += val.hash unless val == 0
             end
         end
-
     end
 
     def hash
@@ -35,8 +35,9 @@ class SparseMatrix
 
     # Format is [row, column]
     def [](x, y)
-        point = Point.new(x, y)
-        @sparse_hash[point]
+        raise IndexError, "The specified index is out of bounds. The matrix is of size #{@height}x#{@width}." unless x < @height and y < @width
+        raise IndexError, "The index cannot contain negatives." if x < 0 or y < 0
+        @sparse_hash[Point.new(x, y)]
     end
 
     def set_size(rows, columns)
@@ -546,6 +547,20 @@ class SparseMatrix
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
         return [row_count, column_count]
+    end
+    
+    #
+    # Overrides Object#to_s
+    # Printout for SparseMatrix. Delegates to the Matrix class.
+    def to_s
+        to_m().to_s.sub("Matrix", "SparseMatrix")
+    end
+
+    #
+    # Overrides Object#inspect
+    # Printout for SparseMatrix. Delegates to the Matrix class.
+    def inspect
+        to_m().inspect.sub("Matrix", "SparseMatrix")
     end
 
 end
