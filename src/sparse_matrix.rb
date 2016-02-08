@@ -213,19 +213,7 @@ class SparseMatrix
             )
         end
         return product_matrix
-    end
-
-    def inverse()
-        # Pre-conditions. Non-square matrices are non-invertible.
-        if !(self.square?)
-            raise ArgumentError, "The object must be square to be invertible."
-        end
-
-        # Delegate to Matrix
-        return @sparse_matrix.inverse
-
-        # Doing the post-condition by multiplying A*B=I would slow down our package.
-    end
+    end    
 
     # Returns a flipped version of the sparse matrix.
     # 0 3 5 0       0 7 0
@@ -275,6 +263,51 @@ class SparseMatrix
         # Post-condition: We return a trace of the matrix.
 
         return traceVal
+    end
+
+    # The inverse of a matrix is defined as inv(A)=adj(A)/det(A)
+    def inverse()
+        # Pre-conditions. Non-square matrices are non-invertible.
+        if !(self.square?)
+            raise ArgumentError, "The object must be square to be invertible."
+        end
+
+        detValue = determinant()
+        
+        adjugateMatrix = adjugate()
+
+        return adjugateMatrix.scalar_multiply(1.0 / detValue)
+
+        # Doing the post-condition by multiplying A*B=I would slow down our package.
+    end
+
+    # The cofactor is the matrix you get if you get the determinant of 
+    # all the minors in a square matrix and multiply the cofactor value by it.
+    # NOTE: returns an Array
+    def cofactor()
+        coArray = Array.new(@height)  
+        for i in 0..@height - 1
+            coArray[i] = Array.new(@width, 0)
+        end
+
+        for column in 0..coArray[0].size - 1
+            for row in 0..coArray.size - 1
+                detVal = SparseMatrix.new(get_minor(row, column)).determinant()
+                coVal = (-1) ** ((row + 1) + (column + 1))
+                coArray[row][column] = coVal * detVal
+            end
+
+        end
+
+        return coArray
+    end
+
+    # The adjugate is defined as the transpose of the cofactor matrix or:
+    # adj(A)=C^T
+    def adjugate()
+        cofactor = SparseMatrix.new(cofactor())
+
+        return cofactor.transpose()
     end
 
     # Determinant for a 2x2 matrix: [a b] ==> ad - bc

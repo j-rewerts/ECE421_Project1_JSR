@@ -4,42 +4,6 @@ require_relative "sparse_matrix"
 
 class SparseMatrixTest < Test::Unit::TestCase
 
-    def test_coords
-      m1 = [[1,0,2],[0,3,0]]
-      m2 = [[1,0],[0,3],[2,0]]
-      m3 = [[0,0],[9,6]]
-      # get corresponding sparse matrix objects
-      sparse_m1 = SparseMatrix.new(m1)
-      sparse_m2 = SparseMatrix.new(m2)
-      sparse_m3 = SparseMatrix.new(m3)
-
-      assert_equal(sparse_m1[0,0], 1)
-      assert_equal(sparse_m1[0,1], 0)
-      assert_equal(sparse_m1[0,2], 2)
-
-      assert_equal(sparse_m1[1,0], 0)
-      assert_equal(sparse_m1[1,1], 3)
-      assert_equal(sparse_m1[1,2], 0)
-
-
-      assert_equal(sparse_m2[0,0], 1)
-      assert_equal(sparse_m2[0,1], 0)
-
-      assert_equal(sparse_m2[1,0], 0)
-      assert_equal(sparse_m2[1,1], 3)
-
-      assert_equal(sparse_m2[2,0], 2)
-      assert_equal(sparse_m2[2,1], 0)
-
-
-      assert_equal(sparse_m3[0,0], 0)
-      assert_equal(sparse_m3[0,1], 0)
-
-      assert_equal(sparse_m3[1,0], 9)
-      assert_equal(sparse_m3[1,1], 6)
-
-    end
-
     def test_add
         array1 = [[7, 9, 11], [6, 8, 10], [5, 7, 9]]
         array2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
@@ -83,10 +47,12 @@ class SparseMatrixTest < Test::Unit::TestCase
     end
     
     def test_inverse
-        array1 = [[4, 0, 3], [3, 4, 0], [4, 6, 8]]
-        result = Matrix.rows(array1).inverse()
+        array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+        result = Matrix.rows(array1).inverse().to_a()
         
-        assert_equal(SparseMatrix.new(array1).inverse(), result.to_a)
+        SparseMatrix.new(array1).inverse().print()
+
+        assert_equal(SparseMatrix.new(array1).inverse().to_a(), result)
     end
 
     def test_transpose
@@ -144,6 +110,20 @@ class SparseMatrixTest < Test::Unit::TestCase
         array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
 
         assert_equal(SparseMatrix.new(array1).determinant(), Matrix.rows(array1).determinant())
+    end
+
+    def test_cofactor
+      array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+      cofactor = [[-5, -8, 3], [-10, 12, -2], [15, 0, -5]]
+
+      assert_equal(SparseMatrix.new(array1).cofactor(), cofactor)
+    end
+
+    def test_adjugate
+      array1 = [[3, 4, 9], [2, 1, 6], [1, 2, 7]]
+      adj = [[-5, -10, 15], [-8, 12, 0], [3, -2, -5]]
+
+      assert_equal(SparseMatrix.new(array1).adjugate(), adj)
     end
     
     def test_empty?
