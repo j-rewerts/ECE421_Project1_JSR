@@ -507,7 +507,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        if self.square?
+        if self.square? && self.size != [0,0]
             return to_m().diagonal?
         else
             return false
