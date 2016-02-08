@@ -1,6 +1,6 @@
 require "test/unit"
 require "matrix"
-require_relative "sparse_matrix"
+require "./src/sparse_matrix.rb"
 
 class SparseMatrixTest < Test::Unit::TestCase
 
