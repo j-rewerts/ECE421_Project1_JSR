@@ -166,9 +166,9 @@ class SparseMatrix
             # args are vectors
             val = 0
             @sparse_hash.each do |key, value|
-                val += value * array[key.y, key.x]
+                val += (value * array[key.y, key.x]).round(4)
             end
-            return SparseMatrix.new([[val]])
+            return val
         elsif self.size[1] == array.size[0] && (self.size[0] != 1 || array.size[1] != 1) then
             product_matrix = SparseMatrix.new([[]])
             product_matrix.set_size(self.size[1], array.size[0])
@@ -178,7 +178,7 @@ class SparseMatrix
                 while y < array.size[1] do
                     t = self.row_vector(x)
                     r = array.column_vector(y)
-                    product_matrix.set_element(Point.new(x,y), (t * r).round(4))
+                    product_matrix.set_element(Point.new(x,y), (t * r))
                     y += 1
                 end
                 x += 1
