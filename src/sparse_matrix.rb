@@ -19,24 +19,14 @@ class SparseMatrix
         @equality_hash = 0
         @sparse_matrix = Matrix.rows(array)
         
-        i = 0
-        while i < @height do
-
-            j = 0
-            while j < @width do
-
-                if (array[i][j] != 0)
-
-                    point = Point.new(i, j)
-                    @sparse_hash[point] = array[i][j]
-                    @equality_hash += array[i][j].hash
-                end
-
-                j += 1
+        # Populate the hash for the sparse matrix.
+        # Insert a value only if it is not 0.
+        array.each_with_index do |row, row_num|
+            row.each_with_index do |val, col_num|
+                @sparse_hash[Point.new(row_num, col_num)] = val unless val == 0
             end
-
-            i += 1
         end
+
     end
 
     def hash
