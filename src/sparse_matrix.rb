@@ -238,17 +238,17 @@ class SparseMatrix
     #               0 0 3
     def transpose()
         # Initialize the array based upon size of the hash
-        arrayOuter = Array.new(@width)        
-        for i in 0..@width - 1
-            arrayOuter[i] = Array.new(@height, 0)
-        end
+        array_outer = Array.new(@width)        
+        array_outer.each_with_index {|row, row_num|
+            array_outer[row_num] = Array.new(@height, 0)
+        }
 
         # Iterate through, flipping all the spots x and y
         @sparse_hash.each { |key, value|
-            arrayOuter[key.y][key.x] = value
+            array_outer[key.y][key.x] = value
         }
 
-        transposed = SparseMatrix.new(arrayOuter)
+        transposed = SparseMatrix.new(array_outer)
 
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
@@ -270,60 +270,52 @@ class SparseMatrix
     end
 
     def trace()
-        # Pre-conditions. Non-square matrices are non-invertible.
         if !(self.square?)
             raise ArgumentError, "The object must be square to find the trace."
         end
 
-        traceVal = 0
+        trace_val = 0
         for i in 0..@width - 1
-            traceVal += get(i, i)
+            trace_val += get(i, i)
         end
 
-        # Post-condition: We return a trace of the matrix.
-
-        return traceVal
+        return trace_val
     end
 
     # The inverse of a matrix is defined as inv(A)=adj(A)/det(A)
     def inverse()
-        # Pre-conditions. Non-square matrices are non-invertible.
         if !(self.square?)
             raise ArgumentError, "The object must be square to be invertible."
         end
 
-        detValue = determinant()
-        if (detValue == 0)
+        det_value = determinant()
+        if (det_value == 0)
             raise ArgumentError, "The determinant can't be 0."
         end
-
         
-        adjugateMatrix = adjugate()
+        adj_matrix = adjugate()
 
-        return adjugateMatrix.scalar_multiply(1.0 / detValue)
-
-        # Doing the post-condition by multiplying A*B=I would slow down our package.
+        return adj_matrix.scalar_multiply(1.0 / det_value)
     end
 
     # The cofactor is the matrix you get if you get the determinant of 
     # all the minors in a square matrix and multiply the cofactor value by it.
     # NOTE: returns an Array
     def cofactor()
-        coArray = Array.new(@height)  
-        for i in 0..@height - 1
-            coArray[i] = Array.new(@width, 0)
-        end
+        co_array = Array.new(@height)        
+        co_array.each_with_index {|row, row_num|
+            co_array[row_num] = Array.new(@width, 0)
+        }
 
-        for column in 0..coArray[0].size - 1
-            for row in 0..coArray.size - 1
-                detVal = SparseMatrix.new(get_minor(row, column)).determinant()
-                coVal = (-1) ** ((row + 1) + (column + 1))
-                coArray[row][column] = coVal * detVal
-            end
+        co_array.each_with_index {|row, row_num|
+            row.each_with_index {|column, column_num|
+                det_val = SparseMatrix.new(get_minor(row_num, column_num)).determinant()
+                co_val = (-1) ** ((row_num + 1) + (column_num + 1)) # (-1) ^ (i + j)
+                co_array[row_num][column_num] = co_val * det_val
+            }
+        }
 
-        end
-
-        return coArray
+        return co_array
     end
 
     # The adjugate is defined as the transpose of the cofactor matrix or:
@@ -342,55 +334,44 @@ class SparseMatrix
     #                                                [g h i]         [h i]       [g i]       [h i]
     # Then get the determinants for the smaller matrices.
     def determinant()
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
         if !(self.square?)
             raise ArgumentError, "The object must be square to find the determinant."
         end
-
-        #puts "Size: #{@width}"
-        #print()
 
         row = 0
 
         # When the internal array is a 2x2, just return the current det value.
         if @height == 2 and @width == 2
-            rVal = get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)
-            #puts "  Value: #{rVal}"
             return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0) # ad-bc
-
         end        
 
-        rVal = 0
+        r_val = 0
         # recursively break up the array
         for i in 0..@width - 1
-            babyArray = get_minor(row, i)
+            baby_array = get_minor(row, i)
 
-            babyMatrix = SparseMatrix.new(babyArray)
+            baby_matrix = SparseMatrix.new(baby_array)
 
-            rVal = rVal + (-1) ** ((row + 1) + (i + 1)) * get(row, i) * babyMatrix.determinant
+            r_val = r_val + (-1) ** ((row + 1) + (i + 1)) * get(row, i) * baby_matrix.determinant()
 
         end
 
-
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return rVal
+        return r_val
     end
 
     # A helper function for getting the determinant. This will get the subarray
     # for this sparse matrix. 
     # Note: This returns an array object
     def get_minor(row, column)
-        # Pre-condition
         if (column >= @width)
             raise ArgumentError, "The row and column must be less than the matrix size."
         end
 
         # build an array to hold the new sub-array
-        subArray = Array.new(@height - 1)  
-        for subi in 0..@height - 2
-            subArray[subi] = Array.new(@width - 1, 0)
-        end
+        sub_array = Array.new(@height - 1)        
+        sub_array.each_with_index {|row, row_num|
+            sub_array[row_num] = Array.new(@width - 1, 0)
+        }
 
         # Fill the array with data so long as it isn't from the current value's row/col
         @sparse_hash.each { |key, value|
@@ -402,28 +383,21 @@ class SparseMatrix
             end
 
             if key.y > column
-
                 if key.x > row
-                    subArray[key.x - 1][key.y - 1] = value
+                    sub_array[key.x - 1][key.y - 1] = value
                 elsif key.x < row
-                    subArray[key.x][key.y - 1] = value
-                end
-                
+                    sub_array[key.x][key.y - 1] = value
+                end                
             elsif key.y < column
-
                 if key.x > row
-                    subArray[key.x - 1][key.y] = value
+                    sub_array[key.x - 1][key.y] = value
                 elsif key.x < row
-                    subArray[key.x][key.y] = value
+                    sub_array[key.x][key.y] = value
                 end
-
-            end
-            #puts "X: #{key.x} Y: #{key.y} Value: #{value}"
-
-            
+            end 
         }
 
-        return subArray
+        return sub_array
     end
 
     def print()
@@ -435,27 +409,14 @@ class SparseMatrix
     end
 
     def row_count()
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
         return @height
     end
 
     def column_count()
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
         return @width
     end
 
     def empty?()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
         return @sparse_hash.empty?
     end
 
@@ -487,8 +448,6 @@ class SparseMatrix
     end
 
     def invertible?()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
         begin
             inverse()
 
@@ -498,8 +457,6 @@ class SparseMatrix
         end
 
         return true
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
     end
 
     def diagonal?()
