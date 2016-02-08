@@ -5,7 +5,6 @@ class SparseMatrix
 
     # Instance variables for SparseMatrix:
     # @sparse_hash
-    # @sparse_matrix
     # @width
     # @height
     # @equality_hash
@@ -17,7 +16,6 @@ class SparseMatrix
         @height = array.length
         array[0] ? @width = array[0].length : @width = 0
         @equality_hash = 0
-        @sparse_matrix = Matrix.rows(array)
         
         # Populate the hash for the sparse matrix.
         # Insert a value only if it is not 0.
@@ -27,6 +25,7 @@ class SparseMatrix
                 @equality_hash += val.hash unless val == 0
             end
         end
+        
     end
 
     def hash
@@ -61,13 +60,7 @@ class SparseMatrix
 
         @sparse_hash[key] = value
         @equality_hash += value.hash
-        begin
-            arr = @sparse_matrix.to_a
-            arr[key.x][key.y] = value
-            @sparse_matrix = Matrix.rows(arr)
-        rescue
-            
-        end
+
     end
 
     def add(m)
@@ -168,16 +161,21 @@ class SparseMatrix
     end
 
     alias * matrix_multiply
-    alias scalar_multiply matrix_multiply
-    # # This function may not need to exist. It could just be part of the other multiply function
-    # def scalar_multiply(value)
 
-    #     # Check pre-conditions: value must be an Integer
-    #     if !(value.is_a? Integer)
-    #         raise TypeError, "The input object is not an Integer. It is a #{value.class}."
-    #     end
+    # Scalar multiply increases/decreases itself by value.
+    def scalar_multiply(value)
 
-    # end
+        # Check pre-conditions: value must be an Integer
+        if !(value.is_a? Integer) and !(value.is_a? Float)
+            raise TypeError, "The input object is not an Integer or Float. It is a #{value.class}."
+        end
+        
+        @sparse_hash.each { |key, hashValue|
+            set_element(key, hashValue * value )
+        }
+        
+        return self
+    end
 
     def elementwise_multiply(array)
         case array
@@ -220,16 +218,17 @@ class SparseMatrix
 
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
-            raise Error, "The transpose failed."
+            raise ArgumentError, "The transpose failed."
         end
 
         return transposed
     end
 
+    # We are delegating this to Matrix.
     def rank()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
-        rankVal = @sparse_matrix.rank
+        rankVal = to_m().rank()
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
@@ -242,7 +241,10 @@ class SparseMatrix
             raise ArgumentError, "The object must be square to find the trace."
         end
 
-        traceVal = @sparse_matrix.trace
+        traceVal = 0
+        for i in 0..@width - 1
+            traceVal += get(i, i)
+        end
 
         # Post-condition: We return a trace of the matrix.
 
@@ -257,6 +259,10 @@ class SparseMatrix
         end
 
         detValue = determinant()
+        if (detValue == 0)
+            raise ArgumentError, "The determinant can't be 0."
+        end
+
         
         adjugateMatrix = adjugate()
 
@@ -427,7 +433,6 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.orthogonal?
     end
 
     def square?()
@@ -435,7 +440,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.square?
+        return @width == @height
     end
 
     def singular?()
@@ -443,16 +448,24 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.singular?
+        return to_m().singular?
 
     end
 
     def invertible?()
 
         # Pre-conditions: The current object (self) is already a SparseMatrix.
+        begin
+            inverse()
+
+        rescue ArgumentError
+            # Either isn't square or det==0
+            return false
+        end
+
+        return true
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.invertible?
     end
 
     def diagonal?()
@@ -461,7 +474,7 @@ class SparseMatrix
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         if self.square?
-            return @sparse_matrix.diagonal?
+            return to_m().diagonal?
         else
             return false
         end
@@ -479,7 +492,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         if self.size[0] == self.size[1]
-            return @sparse_matrix.symmetric?
+            return to_m().symmetric?
         else
             return false
         end
@@ -519,25 +532,24 @@ class SparseMatrix
     alias == eql?
     alias equals eql?
 
+    # Returns an array representation of the sparse matrix.
     def to_a
-        if [@sparse_matrix.row_count,@sparse_matrix.column_count] == self.size
-            return @sparse_matrix.to_a
+        # build an array to hold the new sub-array
+        array = Array.new(@height)  
+        for row in 0..@height - 1
+            array[row] = Array.new(@width, 0)
         end
-        # @height = @sparse_matrix.row_count
-        # @width = @sparse_matrix.column_count
-        @sparse_matrix = []
-        @i = 0
-        while @i < @height do
-            @sparse_matrix.push([])
-            @j = 0
-            while @j < @width do
-                @sparse_matrix[@i].push(self[@i,@j])
-                @j += 1
-            end
-            @i += 1
-        end
-        @sparse_matrix = Matrix.rows(@sparse_matrix)
-        return @sparse_matrix.to_a
+
+        @sparse_hash.each { |key, value|
+            array[key.x][key.y] = value
+        }
+
+        return array
+    end
+
+    # Returns a Matrix representation of the sparse matrix.
+    def to_m
+        return Matrix.rows(to_a())
     end
 
     def size()
