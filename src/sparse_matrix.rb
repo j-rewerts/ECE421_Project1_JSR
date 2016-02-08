@@ -19,7 +19,7 @@ class SparseMatrix
     def initialize(array)
         @sparse_hash = Hash.new
         @sparse_hash.default = 0
-        @height = array.length
+        array.length == 1 && array[0].length == 0 ? @height = 0 : @height = array.length
         array[0] ? @width = array[0].length : @width = 0
         @equality_hash = 0
         
