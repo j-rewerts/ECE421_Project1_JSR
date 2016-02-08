@@ -290,15 +290,15 @@ class SparseMatrix
             raise ArgumentError, "The object must be square to find the determinant."
         end
 
-        puts "Size: #{@width}"
-        print()
+        #puts "Size: #{@width}"
+        #print()
 
         row = 0
 
         # When the internal array is a 2x2, just return the current det value.
         if @height == 2 and @width == 2
             rVal = get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0)
-            puts "  Value: #{rVal}"
+            #puts "  Value: #{rVal}"
             return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0) # ad-bc
 
         end        
@@ -310,7 +310,7 @@ class SparseMatrix
 
             babyMatrix = SparseMatrix.new(babyArray)
 
-            rVal = rVal + (-1) ** ((row + 1) * (i + 1)) * get(row, i) * babyMatrix.determinant
+            rVal = rVal + (-1) ** ((row + 1) + (i + 1)) * get(row, i) * babyMatrix.determinant
 
         end
 
