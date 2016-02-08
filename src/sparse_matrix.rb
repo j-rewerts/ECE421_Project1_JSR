@@ -1,4 +1,4 @@
-require "./point.rb"
+require_relative "point"
 require "matrix"
 
 class SparseMatrix
@@ -88,7 +88,7 @@ class SparseMatrix
 
     def add(m)
 
-        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
+        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a(n) #{m.class}."
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
