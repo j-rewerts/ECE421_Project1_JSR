@@ -22,6 +22,10 @@ class SparseMatrix
         i = 0
         while i < @height do
 
+            if array[i].empty?
+                next
+            end
+
             j = 0
             while j < @width do
 
@@ -234,7 +238,7 @@ class SparseMatrix
 
         # Post conditions
         if !(self.row_count() == transposed.column_count()) or !(self.column_count() == transposed.row_count())
-            raise Error, "The transpose failed."
+            raise ArgumentError, "The transpose failed."
         end
 
         return transposed
