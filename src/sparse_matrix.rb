@@ -5,7 +5,6 @@ class SparseMatrix
 
     # Instance variables for SparseMatrix:
     # @sparse_hash
-    # @sparse_matrix
     # @width
     # @height
     # @equality_hash
@@ -17,7 +16,6 @@ class SparseMatrix
         @height = array.length
         array[0] ? @width = array[0].length : @width = 0
         @equality_hash = 0
-        @sparse_matrix = Matrix.rows(array)
         
         i = 0
         while i < @height do
@@ -74,13 +72,7 @@ class SparseMatrix
 
         @sparse_hash[key] = value
         @equality_hash += value.hash
-        begin
-            arr = @sparse_matrix.to_a
-            arr[key.x][key.y] = value
-            @sparse_matrix = Matrix.rows(arr)
-        rescue
-            
-        end
+
     end
 
     def add(m)
@@ -244,10 +236,11 @@ class SparseMatrix
         return transposed
     end
 
+    # We are delegating this to Matrix.
     def rank()
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
-        rankVal = @sparse_matrix.rank
+        rankVal = to_m().rank()
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
 
@@ -260,7 +253,10 @@ class SparseMatrix
             raise ArgumentError, "The object must be square to find the trace."
         end
 
-        traceVal = @sparse_matrix.trace
+        traceVal = 0
+        for i in 0..@width - 1
+            traceVal += get(i, i)
+        end
 
         # Post-condition: We return a trace of the matrix.
 
@@ -449,7 +445,6 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.orthogonal?
     end
 
     def square?()
@@ -457,7 +452,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.square?
+        return @width == @height
     end
 
     def singular?()
@@ -465,7 +460,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @sparse_matrix.singular?
+        return to_m().singular?
 
     end
 
@@ -491,7 +486,7 @@ class SparseMatrix
 
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         if self.square?
-            return @sparse_matrix.diagonal?
+            return to_m().diagonal?
         else
             return false
         end
@@ -509,7 +504,7 @@ class SparseMatrix
         # Pre-conditions: The current object (self) is already a SparseMatrix.
         # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
         if self.size[0] == self.size[1]
-            return @sparse_matrix.symmetric?
+            return to_m().symmetric?
         else
             return false
         end
