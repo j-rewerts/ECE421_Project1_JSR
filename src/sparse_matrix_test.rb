@@ -9,7 +9,7 @@ class SparseMatrixTest < Test::Unit::TestCase
         array2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         result = Matrix.rows(array1) + Matrix.rows(array2)
 
-        assert_equal(SparseMatrix.new(array1).add(array2), result.to_a)
+        assert_equal(SparseMatrix.new(array1).add(array2), result)
     end
 
     def test_subtract
@@ -17,7 +17,7 @@ class SparseMatrixTest < Test::Unit::TestCase
         array2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         result = Matrix.rows(array1) - Matrix.rows(array2)
 
-        assert_equal(SparseMatrix.new(array1).subtract(array2), result.to_a)
+        assert_equal(SparseMatrix.new(array1).subtract(array2), result)
     end
     
     def test_matrix_multiply
