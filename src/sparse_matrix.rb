@@ -79,13 +79,19 @@ class SparseMatrix
     
     def add(m)
 
-        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a(n) #{m.class}."
+        typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
+        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."
 
         # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
+        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix or m.is_a? Array
 
         # Matrix addition is only defined when the sizes are exactly the same.
-        raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+        case m
+        when Array
+            raise DimensionError, diimenesionerror_msg unless m.length == @height and m[0].length == @width
+        when Matrix, SparseMatrix
+            raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
+        end
         
         sum_matrix = SparseMatrix.new(m.to_a)
         @sparse_hash.each {|p, v| sum_matrix.set_element(p, v + sum_matrix[p.x, p.y])}
@@ -96,13 +102,18 @@ class SparseMatrix
     
     def subtract(m)
 
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix)
-            raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
-        end
+        typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
+        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."    
+    
+        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix or m.is_a? Array
 
-        # Matrix addition is only defined when the sizes are exactly the same.
-        raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+        # Matrix subtraction is only defined when the sizes are exactly the same.
+        case m
+        when Array
+            raise DimensionError, diimenesionerror_msg unless m.length == @height and m[0].length == @width
+        when Matrix, SparseMatrix
+            raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
+        end
         
         difference_matrix = empty(@height, @width)
         m.to_a.each_with_index {|row, row_num| row.each_with_index {|val, col_num| difference_matrix.set_element(Point.new(row_num, col_num), -val)}}
@@ -253,15 +264,6 @@ class SparseMatrix
         return transposed
     end
 
-    def rank
-        to_m.rank
-    end
-
-    def trace
-        raise DimensionError, "The Matrix must be square to find the trace." if !square?
-        0.upto(@width-1).inject {|trace, i| trace + get(i, i)}
-    end
-
     # The inverse of a matrix is defined as inv(A)=adj(A)/det(A)
     def inverse
         if !(self.square?)
@@ -375,6 +377,15 @@ class SparseMatrix
         return sub_array
     end
 
+    def rank
+        to_m.rank
+    end
+
+    def trace
+        raise DimensionError, "The Matrix must be square to find the trace." if !square?
+        0.upto(@width-1).inject(0) {|trace, i| trace + get(i, i)}
+    end
+    
     # Prints the matrix to console. Each row uses a separate line.
     def print
         to_a.cycle(1) {|inner| p inner}
@@ -403,7 +414,7 @@ class SparseMatrix
 
     # A matrix is square if its dimensions are equal.
     def square?
-        @width == @height
+        @width == @height and @width != 0
     end
 
     # A matrix is singular (noninvertible) if it is square and its determinant is 0.    
@@ -431,6 +442,7 @@ class SparseMatrix
 
     # A matrix M is symmetric if and only if M[i, j] == M [j, i]. M == M Transpose.
     def symmetric?
+        return false if not square?
         @sparse_hash.each {|point, val| return false if get(point.x, point.y) != get(point.y, point.x)}
         true
     end
