@@ -39,7 +39,7 @@ class SparseMatrix
 
     # Format is [row, column]
     def [](x, y)
-        raise IndexError, "The specified index is out of bounds. The matrix is of size #{@height}x#{@width}." unless x < @height and x >= 0 and y < @width and y >= 0
+        raise IndexError, "The specified index is out of bounds. The matrix is of size #{@height}x#{@width}." unless x < @height and y < @width
         raise IndexError, "The index cannot contain negatives." if x < 0 or y < 0
         @sparse_hash[Point.new(x, y)]
     end
@@ -71,54 +71,57 @@ class SparseMatrix
     # Returns a new, empty (zeroed) SparseMatrix of size {height x width}.
     #
     # Example:
-    # empty(2, 3) --> [[0, 0, 0], [0, 0, 0]]
+    # SparseMatrix.empty(2, 3) --> [[0, 0, 0], [0, 0, 0]]
     #
-    def empty(height, width)
+    def SparseMatrix.empty(height, width)
+        raise ArgumentError, "Dimensions must be positive integers." unless height > 0 and width > 0
         SparseMatrix.new(Array.new(height) {Array.new(width) {0}})
+    end
+
+    # Returns an identity matrix with the dimensions {size x size}.
+    def SparseMatrix.identity(size)
+        raise ArgumentError, "Size of identity matrix must be an integer." unless size.is_a? Integer
+        SparseMatrix.new(Array.new(size) {|i| Array.new(size) {|j| i == j ? 1 : 0}})
     end
     
     def add(m)
-
-        typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
-        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."
-
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix or m.is_a? Array
-
-        # Matrix addition is only defined when the sizes are exactly the same.
         case m
         when Array
-            raise DimensionError, diimenesionerror_msg unless m.length == @height and m[0].length == @width
-        when Matrix, SparseMatrix
-            raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.length == @height and m[0].length == @width
+            sum_matrix = Matrix.build(@height, @width) {|i, j| get(i, j) + m[i][j]}
+        when Matrix
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+            sum_matrix = Matrix.build(@height, @width) {|i, j| get(i, j) + m[i, j]}
+        when SparseMatrix
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+            sum_matrix = SparseMatrix.empty(@height, @width)
+            @sparse_hash.each {|point, val| sum_matrix.set_element(point, val)}
+            m.sparse_hash.each {|point, val| sum_matrix.set_element(point, val + sum_matrix[point.x, point.y])}
+        else
+            raise TypeError, "Unsupported type for addition. The input object must be a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
         end
-        
-        sum_matrix = SparseMatrix.new(m.to_a)
-        @sparse_hash.each {|p, v| sum_matrix.set_element(p, v + sum_matrix[p.x, p.y])}
         sum_matrix
     end
 
     alias + add
     
     def subtract(m)
-
-        typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
-        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."    
-    
-        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix or m.is_a? Array
-
-        # Matrix subtraction is only defined when the sizes are exactly the same.
         case m
         when Array
-            raise DimensionError, diimenesionerror_msg unless m.length == @height and m[0].length == @width
-        when Matrix, SparseMatrix
-            raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.length == @height and m[0].length == @width
+            diff_matrix = Matrix.build(@height, @width) {|i, j| get(i, j) - m[i][j]}
+        when Matrix
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+            diff_matrix = Matrix.build(@height, @width) {|i, j| get(i, j) - m[i, j]}
+        when SparseMatrix
+            raise DimensionError, "Dimension mismatch. Matrix sizes must be identical." unless m.row_count == @height and m.column_count == @width
+            diff_matrix = SparseMatrix.empty(@height, @width)
+            @sparse_hash.each {|point, val| diff_matrix.set_element(point, val)}
+            m.sparse_hash.each {|point, val| diff_matrix.set_element(point, diff_matrix[point.x, point.y] - val)}
+        else
+            raise TypeError, "Unsupported type for subtraction. The input object must be a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
         end
-        
-        difference_matrix = empty(@height, @width)
-        m.to_a.each_with_index {|row, row_num| row.each_with_index {|val, col_num| difference_matrix.set_element(Point.new(row_num, col_num), -val)}}
-        @sparse_hash.each {|p, v| difference_matrix.set_element(p, v + difference_matrix[p.x, p.y])}
-        difference_matrix
+        diff_matrix
     end
 
     alias - subtract    
@@ -432,12 +435,6 @@ class SparseMatrix
         return false if not square?
         @sparse_hash.each {|point, val| return false if point.x != point.y}
         true
-    end
-
-    # Returns an identity matrix with the dimensions: size x size.
-    def SparseMatrix.identity(size)
-        raise ArgumentError, "Size of identity matrix must be an integer." unless size.is_a? Integer
-        SparseMatrix.new(Array.new(size) {|i| Array.new(size) {|j| i == j ? 1 : 0}})
     end
 
     # A matrix M is symmetric if and only if M[i, j] == M [j, i]. M == M Transpose.
