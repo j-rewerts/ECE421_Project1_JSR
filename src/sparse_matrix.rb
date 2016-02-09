@@ -57,7 +57,7 @@ class SparseMatrix
     end
 
     def get_copy
-        # http://stackoverflow.com/questions/4157399/how-do-i-copy-a-hash-in-ruby User: Wayne
+        # http://stackoverflow.com/questions/4157399/how-do-i-copy-a-hash-in-ruby
         return Marshal.load(Marshal.dump(self))
     end
 
@@ -429,23 +429,8 @@ class SparseMatrix
     end
 
     def eql?(m)
-        case m
-        when Array
-            if m == self.to_a
-                return true
-            else
-                m = SparseMatrix.new(m)
-            end
-            return self.hash == m.hash
+        return (m.class.method_defined? :to_a and self.to_a == m.to_a ? true : false)
 
-        when Matrix
-            m = SparseMatrix.new(m.to_a)
-            return self.to_a == m.to_a
-        when SparseMatrix
-            return self.to_a == m.to_a
-        end
-
-        return false
     end
 
     alias eql eql?
