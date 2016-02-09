@@ -7,7 +7,6 @@ class SparseMatrix
     # @sparse_hash
     # @width
     # @height
-    # @equality_hash
 
     attr_reader :sparse_hash
     
@@ -21,20 +20,14 @@ class SparseMatrix
         @sparse_hash.default = 0
         array.length == 1 && array[0].length == 0 ? @height = 0 : @height = array.length
         array[0] ? @width = array[0].length : @width = 0
-        @equality_hash = 0
-        
+
         # Populate the hash for the sparse matrix.
         # Insert a value only if it is not 0.
         array.each_with_index do |row, row_num|
             row.each_with_index do |val, col_num|
                 @sparse_hash[Point.new(row_num, col_num)] = val unless val == 0
-                @equality_hash += val.hash unless val == 0
             end
         end
-    end
-
-    def hash
-        @equality_hash
     end
 
     # Format is [row, column]
@@ -52,8 +45,6 @@ class SparseMatrix
     alias get []
 
     def set_element(key,value)
-        if @sparse_hash[key] != 0
-            @equality_hash = @equality_hash - @sparse_hash[key].hash
         end
 
         if key.x > @width
@@ -64,7 +55,6 @@ class SparseMatrix
         end
 
         @sparse_hash[key] = value
-        @equality_hash += value.hash
 
     end
 
@@ -190,11 +180,6 @@ class SparseMatrix
                 x += 1
             end
             return product_matrix
-            # product_matrix = Hash.new
-            # product_matrix.default = 0
-            # @sparse_hash.each do |key, value|
-            #     product_matrix[key.x, key.y] += array[key] * value
-            # end
         end
 
 
