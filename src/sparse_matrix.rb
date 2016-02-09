@@ -58,6 +58,11 @@ class SparseMatrix
 
     end
 
+    def get_copy
+        # http://stackoverflow.com/questions/4157399/how-do-i-copy-a-hash-in-ruby User: Wayne
+        return Marshal.load(Marshal.dump(self))
+    end
+
     # Returns a new, empty (zeroed) SparseMatrix of size {height x width}.
     #
     # Example:
@@ -194,7 +199,7 @@ class SparseMatrix
         if !(value.is_a? Integer) and !(value.is_a? Float)
             raise TypeError, "The input object is not an Integer or Float. It is a #{value.class}."
         end
-        
+        product_matrix = self.get_copy
         @sparse_hash.each { |key, hashValue|
             set_element(key, hashValue * value )
         }
@@ -212,7 +217,7 @@ class SparseMatrix
             raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{array.class}."
         end
 
-        product_matrix = self.clone
+        product_matrix = self.get_copy
         @sparse_hash.each do |key, value|
             product_matrix.set_element(
                 Point.new(key.x,key.y),
