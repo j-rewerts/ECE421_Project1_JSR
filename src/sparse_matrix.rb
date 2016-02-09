@@ -120,6 +120,8 @@ class SparseMatrix
     alias - subtract
 
     def column_vector(column)
+        raise ArgumentError, "Not a number." unless column.is_a? Fixnum
+        raise ArgumentError, "Number too large." unless column < @height
         vec = []
         c = 0
         while c < @height do
@@ -130,6 +132,8 @@ class SparseMatrix
     end
 
     def row_vector(row)
+        raise ArgumentError, "Not a number." unless row.is_a? Fixnum
+        raise ArgumentError, "Number too large." unless row < @width
         vec = [[]]
         c = 0
         while c < @width do
