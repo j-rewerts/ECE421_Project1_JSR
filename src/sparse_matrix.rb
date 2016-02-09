@@ -139,6 +139,22 @@ class SparseMatrix
         return SparseMatrix.new(vec)
     end
 
+    def **(exponent)
+        case exponent
+        when Fixnum
+            product_matrix = self.get_copy
+            for i in 2..(exponent)
+                product_matrix = product_matrix * product_matrix
+            end
+            return product_matrix
+        else
+            # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+            typeerror_msg = "The input not a fixnum. It is a #{exponent.class}."
+
+            # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+            raise TypeError, typeerror_msg
+        end
+    end
 
     def matrix_multiply(value)
         case value
