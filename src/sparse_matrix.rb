@@ -93,7 +93,7 @@ class SparseMatrix
         else
             raise TypeError, "Unsupported type for addition. The input object must be a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
         end
-        sum_matrix
+        SparseMatrix.new(sum_matrix.to_a)
     end
 
     alias + add
@@ -114,7 +114,7 @@ class SparseMatrix
         else
             raise TypeError, "Unsupported type for subtraction. The input object must be a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
         end
-        diff_matrix
+        SparseMatrix.new(diff_matrix.to_a)
     end
 
     alias - subtract
