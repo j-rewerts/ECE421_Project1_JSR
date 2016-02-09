@@ -139,28 +139,21 @@ class SparseMatrix
     end
 
 
-    def matrix_multiply(array)
-        case array
+    def matrix_multiply(value)
+        case value
         when Fixnum
-            product_matrix = self.clone
-            @sparse_hash.each do |key, value|
-                product_matrix.set_element(
-                    key,
-                    value*array
-                )
-            end
-            return product_matrix
+            return self.scalar_multiply(value)
         when Array
-            array = SparseMatrix.new(array)
+            array = SparseMatrix.new(value)
+        when SparseMatrix
+            array = value
+        else
+            # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+            typeerror_msg = "The input object is not a Matrix, SparseMatrix or Array. It is a #{value.class}."
+
+            # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
+            raise TypeError, typeerror_msg
         end
-
-        m = array
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        typeerror_msg = "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
-
-        # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix
-
 
         if self.size[1] == array.size[0] && self.size[0] == 1 && array.size[1] == 1 then
             # return scalar
