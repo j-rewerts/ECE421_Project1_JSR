@@ -9,11 +9,11 @@ class SparseMatrix
     # @height
 
     attr_reader :sparse_hash
-    
+
     # Exception for mismatching/incompatible dimensions during matrix operations.
     class DimensionError < StandardError
     end
-    
+
     # Iterate through the passed-in array, only adding non-zero values to the hash.
     def initialize(array)
         @sparse_hash = Hash.new
@@ -45,13 +45,11 @@ class SparseMatrix
     alias get []
 
     def set_element(key,value)
+        if key.y > @width
+            @width = key.y + 1
         end
-
-        if key.x > @width
-            @width = key.x + 1
-        end
-        if key.y > @height
-            @height = key.y + 1
+        if key.x > @height
+            @height = key.x + 1
         end
 
         @sparse_hash[key] = value
@@ -71,7 +69,7 @@ class SparseMatrix
     def empty(height, width)
         SparseMatrix.new(Array.new(height) {Array.new(width) {0}})
     end
-    
+
     def add(m)
 
         typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
@@ -87,19 +85,19 @@ class SparseMatrix
         when Matrix, SparseMatrix
             raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
         end
-        
+
         sum_matrix = SparseMatrix.new(m.to_a)
         @sparse_hash.each {|p, v| sum_matrix.set_element(p, v + sum_matrix[p.x, p.y])}
         sum_matrix
     end
 
     alias + add
-    
+
     def subtract(m)
 
         typeerror_msg = "The input object is not a Matrix, SparseMatrix, or Array. It is a(n) #{m.class}."
-        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."    
-    
+        diimenesionerror_msg = "Dimension mismatch. Matrix sizes must be identical."
+
         raise TypeError, typeerror_msg unless m.is_a? Matrix or m.is_a? SparseMatrix or m.is_a? Array
 
         # Matrix subtraction is only defined when the sizes are exactly the same.
@@ -109,14 +107,14 @@ class SparseMatrix
         when Matrix, SparseMatrix
             raise DimensionError, diimenesionerror_msg unless m.row_count == @height and m.column_count == @width
         end
-        
+
         difference_matrix = empty(@height, @width)
         m.to_a.each_with_index {|row, row_num| row.each_with_index {|val, col_num| difference_matrix.set_element(Point.new(row_num, col_num), -val)}}
         @sparse_hash.each {|p, v| difference_matrix.set_element(p, v + difference_matrix[p.x, p.y])}
         difference_matrix
     end
 
-    alias - subtract    
+    alias - subtract
 
     def column_vector(column)
         vec = []
@@ -218,7 +216,7 @@ class SparseMatrix
             )
         end
         return product_matrix
-    end    
+    end
 
     # Returns a flipped version of the sparse matrix.
     # 0 3 5 0       0 7 0
@@ -227,7 +225,7 @@ class SparseMatrix
     #               0 0 3
     def transpose()
         # Initialize the array based upon size of the hash
-        array_outer = Array.new(@width)        
+        array_outer = Array.new(@width)
         array_outer.each_with_index {|row, row_num|
             array_outer[row_num] = Array.new(@height, 0)
         }
@@ -257,17 +255,17 @@ class SparseMatrix
         if (det_value == 0)
             raise ArgumentError, "The determinant can't be 0."
         end
-        
+
         adj_matrix = adjugate()
 
         return adj_matrix.scalar_multiply(1.0 / det_value)
     end
 
-    # The cofactor is the matrix you get if you get the determinant of 
+    # The cofactor is the matrix you get if you get the determinant of
     # all the minors in a square matrix and multiply the cofactor value by it.
     # NOTE: returns an Array
     def cofactor
-        co_array = Array.new(@height)        
+        co_array = Array.new(@height)
         co_array.each_with_index {|row, row_num|
             co_array[row_num] = Array.new(@width, 0)
         }
@@ -295,7 +293,7 @@ class SparseMatrix
     #                               [c d]
     #
     # Determinants for larger square matrices (3x3): [a b c]
-    #                                                [d e f] ==> a * [e f] - b * [d f] + c * [e f]  
+    #                                                [d e f] ==> a * [e f] - b * [d f] + c * [e f]
     #                                                [g h i]         [h i]       [g i]       [h i]
     # Then get the determinants for the smaller matrices.
     def determinant
@@ -308,7 +306,7 @@ class SparseMatrix
         # When the internal array is a 2x2, just return the current det value.
         if @height == 2 and @width == 2
             return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0) # ad-bc
-        end        
+        end
 
         r_val = 0
         # recursively break up the array
@@ -325,7 +323,7 @@ class SparseMatrix
     end
 
     # A helper function for getting the determinant. This will get the subarray
-    # for this sparse matrix. 
+    # for this sparse matrix.
     # Note: This returns an array object
     def get_minor(row, column)
         if (column >= @width)
@@ -333,7 +331,7 @@ class SparseMatrix
         end
 
         # build an array to hold the new sub-array
-        sub_array = Array.new(@height - 1)        
+        sub_array = Array.new(@height - 1)
         sub_array.each_with_index {|row, row_num|
             sub_array[row_num] = Array.new(@width - 1, 0)
         }
@@ -347,14 +345,14 @@ class SparseMatrix
                     sub_array[key.x - 1][key.y - 1] = value
                 elsif key.x < row
                     sub_array[key.x][key.y - 1] = value
-                end                
+                end
             elsif key.y < column
                 if key.x > row
                     sub_array[key.x - 1][key.y] = value
                 elsif key.x < row
                     sub_array[key.x][key.y] = value
                 end
-            end 
+            end
         }
 
         return sub_array
@@ -368,7 +366,7 @@ class SparseMatrix
         raise DimensionError, "The Matrix must be square to find the trace." if !square?
         0.upto(@width-1).inject(0) {|trace, i| trace + get(i, i)}
     end
-    
+
     # Prints the matrix to console. Each row uses a separate line.
     def print
         to_a.cycle(1) {|inner| p inner}
@@ -400,7 +398,7 @@ class SparseMatrix
         @width == @height and @width != 0
     end
 
-    # A matrix is singular (noninvertible) if it is square and its determinant is 0.    
+    # A matrix is singular (noninvertible) if it is square and its determinant is 0.
     def singular?
         square? and determinant == 0
     end
@@ -470,19 +468,19 @@ class SparseMatrix
     def size
         [row_count, column_count]
     end
-    
+
     # Sparsity is defined as the fraction of zero-elements over the total number of elements.
     def sparsity
         total_elements = size[0]*size[1]
         (total_elements - @sparse_hash.size) / total_elements.to_f
     end
-    
+
     # Density is defined as the fraction of nonzero-elements over the total number of elements.
     def density
         total_elements = size[0]*size[1]
         @sparse_hash.size / total_elements.to_f
     end
-    
+
     # Overrides Object#to_s
     # Printout for SparseMatrix. Delegates to the Matrix class.
     def to_s
