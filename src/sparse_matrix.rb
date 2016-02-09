@@ -266,6 +266,12 @@ class SparseMatrix
 
     # The inverse of a matrix is defined as inv(A)=adj(A)/det(A)
     def inverse
+        if @height == 2 and @width == 2
+            det = (get(0, 0) * get(1, 1)) - (get(0, 1) * get(1, 0).to_f)
+            inv = SparseMatrix.new([[get(1, 1)*(1/det), -get(0, 1)*(1/det)], [-get(1, 0)*(1/det), get(0, 0)*(1/det)]])
+            return inv
+        end
+    
         if !(self.square?)
             raise ArgumentError, "The object must be square to be invertible."
         end
