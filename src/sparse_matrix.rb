@@ -1,4 +1,4 @@
-require "./src/point.rb"
+require_relative "point.rb"
 require "matrix"
 
 class SparseMatrix
@@ -31,7 +31,6 @@ class SparseMatrix
                 @equality_hash += val.hash unless val == 0
             end
         end
-        
     end
 
     def hash
@@ -40,7 +39,7 @@ class SparseMatrix
 
     # Format is [row, column]
     def [](x, y)
-        raise IndexError, "The specified index is out of bounds. The matrix is of size #{@height}x#{@width}." unless x < @height and y < @width
+        raise IndexError, "The specified index is out of bounds. The matrix is of size #{@height}x#{@width}." unless x < @height and x >= 0 and y < @width and y >= 0
         raise IndexError, "The index cannot contain negatives." if x < 0 or y < 0
         @sparse_hash[Point.new(x, y)]
     end
@@ -93,9 +92,7 @@ class SparseMatrix
         sum_matrix
     end
 
-    def +(m)
-        add(m)
-    end
+    alias + add
     
     def subtract(m)
 
@@ -113,10 +110,8 @@ class SparseMatrix
         difference_matrix
     end
 
-    def -(m)
-        subtract(m)
-    end    
-    
+    alias - subtract    
+
     def column_vector(column)
         vec = []
         c = 0
@@ -258,32 +253,17 @@ class SparseMatrix
         return transposed
     end
 
-    # We are delegating this to Matrix.
-    def rank()
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        rankVal = to_m().rank()
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
-        return rankVal
+    def rank
+        to_m.rank
     end
 
-    def trace()
-        if !(self.square?)
-            raise ArgumentError, "The object must be square to find the trace."
-        end
-
-        trace_val = 0
-        for i in 0..@width - 1
-            trace_val += get(i, i)
-        end
-
-        return trace_val
+    def trace
+        raise DimensionError, "The Matrix must be square to find the trace." if !square?
+        0.upto(@width-1).inject {|trace, i| trace + get(i, i)}
     end
 
     # The inverse of a matrix is defined as inv(A)=adj(A)/det(A)
-    def inverse()
+    def inverse
         if !(self.square?)
             raise ArgumentError, "The object must be square to be invertible."
         end
@@ -301,7 +281,7 @@ class SparseMatrix
     # The cofactor is the matrix you get if you get the determinant of 
     # all the minors in a square matrix and multiply the cofactor value by it.
     # NOTE: returns an Array
-    def cofactor()
+    def cofactor
         co_array = Array.new(@height)        
         co_array.each_with_index {|row, row_num|
             co_array[row_num] = Array.new(@width, 0)
@@ -320,7 +300,7 @@ class SparseMatrix
 
     # The adjugate is defined as the transpose of the cofactor matrix or:
     # adj(A)=C^T
-    def adjugate()
+    def adjugate
         cofactor = SparseMatrix.new(cofactor())
 
         return cofactor.transpose()
@@ -333,7 +313,7 @@ class SparseMatrix
     #                                                [d e f] ==> a * [e f] - b * [d f] + c * [e f]  
     #                                                [g h i]         [h i]       [g i]       [h i]
     # Then get the determinants for the smaller matrices.
-    def determinant()
+    def determinant
         if !(self.square?)
             raise ArgumentError, "The object must be square to find the determinant."
         end
@@ -375,12 +355,7 @@ class SparseMatrix
 
         # Fill the array with data so long as it isn't from the current value's row/col
         @sparse_hash.each { |key, value|
-            if key.y == column
-                next
-            end
-            if key.x == row
-                next
-            end
+            next if key.y == column or key.x == row
 
             if key.y > column
                 if key.x > row
@@ -400,98 +375,67 @@ class SparseMatrix
         return sub_array
     end
 
-    def print()
-        array = to_a
-        
-        array.cycle(1) { |inner| 
-            p inner
-        }
+    # Prints the matrix to console. Each row uses a separate line.
+    def print
+        to_a.cycle(1) {|inner| p inner}
     end
 
-    def row_count()
+    # Returns the number of rows in the matrix.
+    def row_count
         return @height
     end
 
-    def column_count()
+    # Returns the number of columns in the matrix.
+    def column_count
         return @width
     end
 
-    def empty?()
+    # A matrix is empty if all entries are 0.
+    def empty?
         return @sparse_hash.empty?
     end
 
-    # Array*Array^T=Identity=Array^T*Array
-    def orthogonal?()
-        return false unless self.square?
-        return (self * self.transpose) == Matrix.identity(self.size[0]) ? true : false
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
+    # A matrix M is orthogonal if M * M Transpose == Identity.
+    def orthogonal?
+        return false unless square?
+        return self * transpose == SparseMatrix.identity(size[0])
     end
 
-    def square?()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return @width == @height
+    # A matrix is square if its dimensions are equal.
+    def square?
+        @width == @height
     end
 
-    def singular?()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        return to_m().singular?
-
+    # A matrix is singular (noninvertible) if it is square and its determinant is 0.    
+    def singular?
+        square? and determinant == 0
     end
 
-    def invertible?()
-        begin
-            inverse()
-
-        rescue ArgumentError
-            # Either isn't square or det==0
-            return false
-        end
-
-        return true
+    # A matrix is invertible (nonsingular) if it is square and its determinant is not 0.
+    def invertible?
+        square? and determinant != 0
     end
 
-    def diagonal?()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        if self.square? && self.size != [0,0]
-            return to_m().diagonal?
-        else
-            return false
-        end
+    # A matrix is diagonal if all entries outside the main diagonal are 0.
+    def diagonal?
+        return false if not square?
+        @sparse_hash.each {|point, val| return false if point.x != point.y}
+        true
     end
 
+    # Returns an identity matrix with the dimensions: size x size.
     def SparseMatrix.identity(size)
-        raise ArgumentError unless size.is_a? Integer
-        sparse_m1 = SparseMatrix.new(Matrix.identity(size).to_a)
-        return sparse_m1.size() == [size,size] ? sparse_m1 : nil
+        raise ArgumentError, "Size of identity matrix must be an integer." unless size.is_a? Integer
+        SparseMatrix.new(Array.new(size) {|i| Array.new(size) {|j| i == j ? 1 : 0}})
     end
 
-    def symmetric?()
-        # http://mathworld.wolfram.com/SymmetricMatrix.html
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-        if self.size[0] == self.size[1]
-            return to_m().symmetric?
-        else
-            return false
-        end
-
+    # A matrix M is symmetric if and only if M[i, j] == M [j, i]. M == M Transpose.
+    def symmetric?
+        @sparse_hash.each {|point, val| return false if get(point.x, point.y) != get(point.y, point.x)}
+        true
     end
 
     def eql?(m)
-        #        puts "tried"
         case m
         when Array
             if m == self.to_a
@@ -509,57 +453,37 @@ class SparseMatrix
         end
 
         return false
-        # # Check pre-conditions: +m+ must be a Matrix or a SparseMatrix.
-        # if !(m.is_a? Matrix) and !(m.is_a? SparseMatrix) and !(m.is_a? Array)
-        #     raise TypeError, "The input object is not a Matrix or SparseMatrix. It is a #{m.class}."
-        # end
-
-        # Implement eql.
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
     end
 
     alias eql eql?
     alias == eql?
     alias equals eql?
 
-    # Returns an array representation of the sparse matrix.
+    # Returns an Array representation of the matrix.
     def to_a
-        # build an array to hold the new sub-array
-        array = Array.new(@height)  
-        for row in 0..@height - 1
-            array[row] = Array.new(@width, 0)
-        end
-
-        @sparse_hash.each { |key, value|
-            array[key.x][key.y] = value
-        }
-
-        return array
+        array = Array.new(@height) {Array.new(@width, 0)}
+        @sparse_hash.each {|key, value| array[key.x][key.y] = value}
+        array
     end
 
-    # Returns a Matrix representation of the sparse matrix.
+    # Returns a Matrix representation of the matrix.
     def to_m
-        return Matrix.rows(to_a())
+        Matrix.rows(to_a())
     end
 
-    def size()
-
-        # Pre-conditions: The current object (self) is already a SparseMatrix.
-
-        # Post-conditions: The current object (self) is still a SparseMatrix. It is untouched.
-
-        return [row_count, column_count]
+    # Returns the dimensions of the matrix.
+    def size
+        [row_count, column_count]
     end
     
     # Sparsity is defined as the fraction of zero-elements over the total number of elements.
-    def sparsity()
+    def sparsity
         total_elements = size[0]*size[1]
         (total_elements - @sparse_hash.size) / total_elements.to_f
     end
     
     # Density is defined as the fraction of nonzero-elements over the total number of elements.
-    def density()
+    def density
         total_elements = size[0]*size[1]
         @sparse_hash.size / total_elements.to_f
     end
