@@ -194,10 +194,10 @@ class SparseMatrix
         end
         product_matrix = self.get_copy
         @sparse_hash.each { |key, hashValue|
-            set_element(key, hashValue * value )
+            product_matrix.set_element(key, hashValue * value )
         }
-        
-        return self
+
+        return product_matrix
     end
 
     def elementwise_multiply(array)
